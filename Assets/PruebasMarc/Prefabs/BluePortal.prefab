@@ -331,4 +331,4 @@ MonoBehaviour:
   m_OtherPortalTransform: {fileID: 438421046736084437}
   m_Camera: {fileID: 8567377526475811930}
   m_MirrorPortal: {fileID: 0}
-  m_OffsetCamera: 0
+  m_OffsetCamera: 0.9

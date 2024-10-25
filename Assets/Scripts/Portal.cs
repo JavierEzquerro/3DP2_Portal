@@ -11,7 +11,7 @@ public class Portal : MonoBehaviour
 
     private void Update()
     {
-        Camera l_CameraPlayerController =  GameManager.instance.GetPlayer().m_Camera;
+        Camera l_CameraPlayerController =  GameManager.instance.GetPlayer().m_Camera.GetComponent<Camera>();
         Vector3 l_Position = l_CameraPlayerController.transform.position;
         Vector3 l_Forward = l_CameraPlayerController.transform.forward;
         Vector3 l_LocalPosition = m_OtherPortalTransform.InverseTransformPoint(l_Position);
