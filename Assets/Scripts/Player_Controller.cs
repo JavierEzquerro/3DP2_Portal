@@ -14,6 +14,8 @@ public class Player_Controller : MonoBehaviour
     private float m_JumpDelay = 0.1f;
     private float m_JumpDelayTimer = 0f;
 
+    public Camera m_Camera;
+
     [SerializeField] private float m_YawSpeed;
     [SerializeField] private float m_pitchSpeed;
     [SerializeField] private float m_minPitch;
@@ -50,6 +52,8 @@ public class Player_Controller : MonoBehaviour
         m_Pitch = m_PitchController.localRotation.eulerAngles.x;
         Cursor.lockState = CursorLockMode.Locked;
         m_FootstepTimer = 0f;
+        GameManager.instance.SetPlayer(this);
+        m_Camera = GetComponent<Camera>();
     }
 
 
