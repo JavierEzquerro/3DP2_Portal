@@ -39,12 +39,7 @@ public class GameManager : MonoBehaviour
     {
         instance = this;
     }
-
-    private void Start()
-    {
-
-    }
-
+    
     public void SetPlayer(Player_Controller l_player)
     {
         m_Player = l_player;

@@ -48,12 +48,11 @@ public class Player_Controller : MonoBehaviour
     void Start()
     {
         //m_Animator = GetComponent<Animator>();
+        GameManager.instance.SetPlayer(this);
         m_Yaw = transform.eulerAngles.y;
         m_Pitch = m_PitchController.localRotation.eulerAngles.x;
         Cursor.lockState = CursorLockMode.Locked;
         m_FootstepTimer = 0f;
-        GameManager.instance.SetPlayer(this);
-        m_Camera = GetComponent<Camera>();
     }
 
 
