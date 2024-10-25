@@ -50,6 +50,7 @@ public class Player_Controller : MonoBehaviour
         m_Pitch = m_PitchController.localRotation.eulerAngles.x;
         Cursor.lockState = CursorLockMode.Locked;
         m_FootstepTimer = 0f;
+        GameManager.instance.SetPlayer(this);
     }
 
 

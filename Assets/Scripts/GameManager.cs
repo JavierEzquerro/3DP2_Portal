@@ -26,13 +26,14 @@ public class GameManager : MonoBehaviour
     public List<IRestartGame> m_RestartGames = new List<IRestartGame>();
     //private List<Enemies> m_ListEnemies = new List<Enemies>();
 
-   
+
     public Vector3 m_direction;
     private float m_SpeedPlayer;
     public bool m_Restart;
 
     private bool m_GameHasEnded = false;
     private List<Item> m_ItemListDestroy = new List<Item>();
+    private Player_Controller m_Player;
 
     private void Awake()
     {
@@ -44,18 +45,17 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void SetPlayer(Player_Controller l_player)
+    {
+        m_Player = l_player;
+    }
+
+    public Player_Controller GetPlayer()
+    {
+        return m_Player;
+    }
+
     /*
-     
-        public void SetPlayer(Player l_player)
-        {
-            m_Player = l_player;
-        }
-
-        public Player GetPlayer()
-        {
-            return m_Player;
-        }
-
         public void AddRestartGame(IRestartGame l_restart)
         {
             m_RestartGames.Add(l_restart);
