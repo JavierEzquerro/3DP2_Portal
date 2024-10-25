@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Portal : MonoBehaviour
 {
-    [SerializeField] private Transform m_OtherPortalTransform;
+    public Transform m_OtherPortalTransform;
+    public Portal m_MirrorPortal;
     [SerializeField] private Camera m_Camera;
-    [SerializeField] private Portal m_MirrorPortal;
     [SerializeField] private float m_OffsetCamera;
 
     private void Update()

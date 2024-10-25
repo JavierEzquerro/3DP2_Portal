@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -39,6 +40,9 @@ public class Player_Controller : MonoBehaviour
     [SerializeField] private AudioClip m_MetalJumpSound;
     [SerializeField] private AudioClip m_MetalLandingSound;
 
+    [Header("Portal")]
+    Vector3 m_MovementDirection; 
+    public float m_TeleportOffset; 
 
     private void Awake()
     {
@@ -75,21 +79,21 @@ public class Player_Controller : MonoBehaviour
         Vector3 l_forward = new Vector3(Mathf.Sin(l_forwardAngle), 0, Mathf.Cos(l_forwardAngle));
         Vector3 l_right = new Vector3(Mathf.Sin(l_rightAngle), 0, Mathf.Cos(l_rightAngle));
 
-        Vector3 l_movement = Vector3.zero;
+        m_MovementDirection = Vector3.zero;
 
         if (Input.GetKey(m_RightKeyCode))
-            l_movement = l_right;
+            m_MovementDirection = l_right;
 
         else if (Input.GetKey(m_LeftKeyCode))
-            l_movement = -l_right;
+            m_MovementDirection = -l_right;
 
         if (Input.GetKey(m_UpKeyCode))
-            l_movement += l_forward;
+            m_MovementDirection += l_forward;
 
         else if (Input.GetKey(m_DownKeyCode))
-            l_movement -= l_forward;
+            m_MovementDirection -= l_forward;
 
-        l_movement.Normalize();
+        m_MovementDirection = m_MovementDirection.normalized;
 
         if (m_JumpDelayTimer > 0)
         {
@@ -111,10 +115,10 @@ public class Player_Controller : MonoBehaviour
         if (Input.GetKey(m_LeftShiftCode))
             l_speedMultiplier = m_speedMultiplier;
 
-        l_movement *= m_speed * l_speedMultiplier * Time.deltaTime;
-        l_movement.y = m_verticalSpeed * Time.deltaTime;
+        m_MovementDirection *= m_speed * l_speedMultiplier * Time.deltaTime;
+        m_MovementDirection.y = m_verticalSpeed * Time.deltaTime;
 
-        CollisionFlags l_CollisionFlags = m_CharacterController.Move(l_movement);
+        CollisionFlags l_CollisionFlags = m_CharacterController.Move(m_MovementDirection);
 
         if ((l_CollisionFlags & CollisionFlags.Below) != 0)
         {
@@ -125,7 +129,7 @@ public class Player_Controller : MonoBehaviour
         if ((l_CollisionFlags & CollisionFlags.Above) != 0 && m_verticalSpeed > 0.0f)
             m_verticalSpeed = 0;
 
-        m_CharacterController.Move(l_movement);
+        m_CharacterController.Move(m_MovementDirection);
 
         if (m_CharacterController.velocity.magnitude > 0.01f)
         {
@@ -133,8 +137,7 @@ public class Player_Controller : MonoBehaviour
             HandleFootstepSound();
         }
         //else
-            //m_Animator.SetBool("Walking", false);
-
+        //m_Animator.SetBool("Walking", false);
     }
 
     private void DetectSurface()
@@ -181,19 +184,30 @@ public class Player_Controller : MonoBehaviour
     public float GetSpeed() { return m_speed; } 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Item"))
+        if (other.CompareTag("Portal"))
         {
-            /*
-             Item l_Item = other.GetComponent<Item>();
-
-            if (l_Item.CanPick())
-            {
-                l_Item.Pick();
-            }
-             */
-
-
+            Portal l_portal; 
+            Teleport(l_portal = other.GetComponent<Portal>()); 
         }
+    }
+
+    private void Teleport(Portal l_portal)
+    {
+        m_MovementDirection.Normalize();
+        Debug.Log(m_MovementDirection);
+        Vector3 l_Position = transform.position + m_MovementDirection * m_TeleportOffset;
+        Vector3 l_LocalPosition = l_portal.m_OtherPortalTransform.InverseTransformPoint(l_Position);
+        Vector3 l_WorldPosition = l_portal.m_MirrorPortal.transform.TransformPoint(l_LocalPosition);
+
+        Vector3 l_Forward = m_MovementDirection; 
+        Vector3 l_LocalForward = l_portal.m_OtherPortalTransform.InverseTransformDirection(m_MovementDirection);
+        Vector3 l_WorldForward = l_portal.m_MirrorPortal.transform.TransformDirection(l_LocalForward);
+      
+        m_CharacterController.enabled = false;   
+        transform.position = l_WorldPosition; 
+        transform.forward = l_WorldForward; 
+        m_Yaw = transform.eulerAngles.y;
+        m_CharacterController.enabled = true; 
     }
 }
 

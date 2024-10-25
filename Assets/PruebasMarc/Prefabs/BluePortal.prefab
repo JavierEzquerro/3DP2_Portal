@@ -32,7 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5944072641866338572}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 90}
 --- !u!33 &5435248062236916235
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -115,7 +115,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5944072641866338572}
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!33 &1479034273127503174
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -228,7 +228,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5944072641866338572}
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: -90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!20 &8567377526475811930
 Camera:
   m_ObjectHideFlags: 0
@@ -290,9 +290,10 @@ GameObject:
   m_Component:
   - component: {fileID: 5944072641866338572}
   - component: {fileID: 1360376697965872961}
+  - component: {fileID: 8270802927181777910}
   m_Layer: 0
   m_Name: BluePortal
-  m_TagString: Untagged
+  m_TagString: Portal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -329,6 +330,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_OtherPortalTransform: {fileID: 438421046736084437}
-  m_Camera: {fileID: 8567377526475811930}
   m_MirrorPortal: {fileID: 0}
+  m_Camera: {fileID: 8567377526475811930}
   m_OffsetCamera: 0.9
+--- !u!65 &8270802927181777910
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4044636623238771393}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 2.59, z: 0.3038685}
+  m_Center: {x: -4.1828562e-16, y: 0, z: 0.09193422}
