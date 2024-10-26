@@ -9,6 +9,7 @@ TagManager:
   - RefractionCube
   - Portal
   - CompanionCube
+  - WhiteWall
   layers:
   - Default
   - TransparentFX
