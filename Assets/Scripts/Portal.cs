@@ -9,7 +9,6 @@ public class Portal : MonoBehaviour
     [SerializeField] private Camera m_Camera;
     [SerializeField] private float m_OffsetCamera;
 
-
     private void Update()
     {
         Camera l_CameraPlayerController =  GameManager.instance.GetPlayer().m_Camera.GetComponent<Camera>();
