@@ -43,9 +43,6 @@ public class PortalWeaponController : MonoBehaviour
 
     private void Update()
     {
-        //Debug.Log("Is Valid: " + IsValidPosition());
-        Debug.Log(m_ReSize); 
-
         m_ReSize = Mathf.Clamp(m_ReSize, 0.5f, 2.0f);   
 
         RaycastHit l_hit;
@@ -104,7 +101,7 @@ public class PortalWeaponController : MonoBehaviour
             }
             
             //ATTRACT OBJECTS
-            if (l_hit.collider.CompareTag("Cube"))
+            if (l_hit.collider.CompareTag("Cube") || l_hit.collider.CompareTag("Turret"))
             {
                 if(Input.GetMouseButtonDown(0) && !m_TrapedObject && !m_AttractingObjects)
                 {
@@ -147,17 +144,29 @@ public class PortalWeaponController : MonoBehaviour
         if (m_TrapedObject)
         {
             //m_ObjectAttract.transform.position = m_AttractPoint.transform.position;
-            m_ObjectAttract.transform.position = Vector3.Lerp(m_ObjectAttract.transform.position, m_AttractPoint.transform.position, 50 * Time.fixedDeltaTime);
+            m_ObjectAttract.transform.position = Vector3.Lerp(m_ObjectAttract.transform.position, m_AttractPoint.transform.position, m_AttractSpeed * Time.fixedDeltaTime);
+            m_ObjectAttract.transform.forward = Vector3.Lerp(m_ObjectAttract.transform.forward, transform.forward, m_AttractSpeed * Time.fixedDeltaTime);        
 
         }
     }
 
     private void AttractObject(RaycastHit l_hit)
     {
-        m_AttractingObjects = true;
         m_ObjectAttract = l_hit.collider.gameObject;
         m_RbObjectAttract = m_ObjectAttract.GetComponent<Rigidbody>();
         m_ObjectCollider = m_RbObjectAttract.GetComponent<BoxCollider>();
+
+        bool l_IsTurret = false; 
+
+        if (l_hit.collider.CompareTag("Turret"))
+                l_IsTurret = true;
+
+        if (l_IsTurret)
+        {
+            //m_ObjectAttract.transform.forward = Vector3.Lerp(m_ObjectAttract.transform.forward, transform.forward, m_AttractSpeed * Time.deltaTime); 
+        }
+
+        m_AttractingObjects = true;
         m_RbObjectAttract.useGravity = false;
         m_RbObjectAttract.velocity = Vector3.zero; 
         m_RbObjectAttract.angularVelocity = Vector3.zero;   
@@ -195,8 +204,6 @@ public class PortalWeaponController : MonoBehaviour
             if (Physics.Raycast(l_CameraPosition,l_Diretion, out l_hit))
             {
                 float l_Angle = Vector3.Angle(l_hit.normal, m_ValidPoints[i].forward);
-
-                Debug.Log("Angle: " + l_Angle);
 
                 if (Vector3.Distance(m_ValidPoints[i].transform.position, l_hit.point) >= m_ThresholdPortal || !l_hit.collider.CompareTag("WhiteWall") || l_Angle <= 178.0f)
                 {

@@ -20,6 +20,8 @@ public class Torret : MonoBehaviour
                 //Reflect ray
                 l_HitInfo.collider.GetComponent<RefractionCube>().CreateRefraction();
             }
+            else if (l_HitInfo.collider.CompareTag("Turret"))
+                Destroy(l_HitInfo.collider.gameObject); 
         }
         else
             m_LaserRenderer.gameObject.SetActive(false);
