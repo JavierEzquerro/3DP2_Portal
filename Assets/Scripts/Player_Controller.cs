@@ -182,6 +182,7 @@ public class Player_Controller : MonoBehaviour
     }
 
     public float GetSpeed() { return m_speed; } 
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Portal"))
@@ -194,7 +195,6 @@ public class Player_Controller : MonoBehaviour
     private void Teleport(Portal l_portal)
     {
         m_MovementDirection.Normalize();
-        Debug.Log(m_MovementDirection);
         Vector3 l_Position = transform.position + m_MovementDirection * m_TeleportOffset;
         Vector3 l_LocalPosition = l_portal.m_OtherPortalTransform.InverseTransformPoint(l_Position);
         Vector3 l_WorldPosition = l_portal.m_MirrorPortal.transform.TransformPoint(l_LocalPosition);

@@ -6,9 +6,8 @@ public class Portal : MonoBehaviour
 {
     public Transform m_OtherPortalTransform;
     public Portal m_MirrorPortal;
-    [SerializeField] private Camera m_Camera;
+    public Camera m_Camera;
     [SerializeField] private float m_OffsetCamera;
-
 
     private void Update()
     {
