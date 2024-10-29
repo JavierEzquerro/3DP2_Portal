@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class PortalWeaponController : MonoBehaviour
 {
-    [SerializeField] private GameObject m_PreviewPortal; 
+    [SerializeField] private GameObject m_PreviewPortal;
     [SerializeField] private Camera m_Camera;
     [SerializeField] private GameObject m_BluePortal;
     [SerializeField] private GameObject m_OrangePortal;
-    [SerializeField] private float m_DistanceRay; 
+    [SerializeField] private float m_DistanceRay;
     [SerializeField] private float m_ThresholdPortal;
     [SerializeField] private float m_ForceLaunch;
     [SerializeField] private float m_DistanceStopLerpAttract;
@@ -17,28 +17,28 @@ public class PortalWeaponController : MonoBehaviour
     [SerializeField] private GameObject m_CrossHairOrange;
 
     public List<Transform> m_ValidPoints = new List<Transform>();
-    public Transform m_AttractPoint; 
+    public Transform m_AttractPoint;
     private bool m_AttractingObjects;
     private bool m_TrapedObject;
     private GameObject m_ObjectAttract;
     private Rigidbody m_RbObjectAttract;
-    private BoxCollider m_ObjectCollider; 
+    private BoxCollider m_ObjectCollider;
     public float m_AttractSpeed;
     private float m_ReSize;
     private Vector3 m_StartScale;
-    private float m_CurrentPortalSize; 
+    private float m_CurrentPortalSize;
 
     private void Start()
     {
-        m_BluePortal.SetActive(false); 
+        m_BluePortal.SetActive(false);
         m_OrangePortal.SetActive(false);
         m_AttractingObjects = false;
         m_TrapedObject = false;
         m_ReSize = 1.0f;
-        m_StartScale = transform.localScale;    
-        m_CurrentPortalSize = m_ReSize; 
+        m_StartScale = transform.localScale;
+        m_CurrentPortalSize = m_ReSize;
         m_CrossHairBlue.SetActive(false);
-        m_CrossHairOrange.SetActive(false); 
+        m_CrossHairOrange.SetActive(false);
     }
 
     private void Update()
@@ -48,7 +48,7 @@ public class PortalWeaponController : MonoBehaviour
         RaycastHit l_hit;
         Ray l_Ray = m_Camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
-        if (Physics.Raycast(l_Ray.origin,l_Ray.direction, out l_hit, m_DistanceRay))
+        if (Physics.Raycast(l_Ray.origin, l_Ray.direction, out l_hit, m_DistanceRay))
         {
             if (!m_AttractingObjects && !m_TrapedObject)
             {
@@ -77,7 +77,7 @@ public class PortalWeaponController : MonoBehaviour
                             m_ReSize -= 0.1f + Time.deltaTime;
                         }
 
-                        if(m_ReSize != m_CurrentPortalSize)
+                        if (m_ReSize != m_CurrentPortalSize)
                         {
                             m_PreviewPortal.transform.localScale = m_StartScale * m_ReSize;
                             m_CurrentPortalSize = m_ReSize;
@@ -88,7 +88,7 @@ public class PortalWeaponController : MonoBehaviour
                         m_PreviewPortal.SetActive(false);
                     }
 
-                    if(Input.GetMouseButtonUp(0))
+                    if (Input.GetMouseButtonUp(0))
                         ShootPortalBlue(l_hit);
 
                     if (Input.GetMouseButtonUp(1))
@@ -99,13 +99,13 @@ public class PortalWeaponController : MonoBehaviour
                     m_PreviewPortal.SetActive(false);
                 }
             }
-            
+
             //ATTRACT OBJECTS
-            if (l_hit.collider.CompareTag("Cube") || l_hit.collider.CompareTag("Turret"))
+            if (l_hit.collider.CompareTag("CompanionCube") || l_hit.collider.CompareTag("Turret"))
             {
-                if(Input.GetMouseButtonDown(0) && !m_TrapedObject && !m_AttractingObjects)
+                if (Input.GetMouseButtonDown(0) && !m_TrapedObject && !m_AttractingObjects)
                 {
-                    AttractObject(l_hit); 
+                    AttractObject(l_hit);
                 }
             }
         }
@@ -115,7 +115,7 @@ public class PortalWeaponController : MonoBehaviour
             m_TrapedObject = false;
             m_RbObjectAttract.useGravity = true;
             m_ObjectCollider.enabled = true;
-            m_RbObjectAttract.AddForce(m_Camera.transform.forward * m_ForceLaunch);  
+            m_RbObjectAttract.AddForce(m_Camera.transform.forward * m_ForceLaunch);
 
         }
         else if (Input.GetMouseButtonDown(1) && m_TrapedObject)
@@ -168,25 +168,25 @@ public class PortalWeaponController : MonoBehaviour
 
         m_AttractingObjects = true;
         m_RbObjectAttract.useGravity = false;
-        m_RbObjectAttract.velocity = Vector3.zero; 
-        m_RbObjectAttract.angularVelocity = Vector3.zero;   
+        m_RbObjectAttract.velocity = Vector3.zero;
+        m_RbObjectAttract.angularVelocity = Vector3.zero;
         //m_ObjectCollider.enabled = false;
     }
 
     private void ShootPortalBlue(RaycastHit l_hit)
     {
         m_BluePortal.SetActive(true);
-        m_CrossHairBlue.SetActive(true);    
-        m_BluePortal.transform.localScale = m_PreviewPortal.transform.localScale;    
+        m_CrossHairBlue.SetActive(true);
+        m_BluePortal.transform.localScale = m_PreviewPortal.transform.localScale;
         m_BluePortal.transform.rotation = Quaternion.LookRotation(l_hit.normal);
         m_BluePortal.transform.position = l_hit.point;
     }
 
     private void ShootPortalOrange(RaycastHit l_hit)
     {
-        m_CrossHairOrange.SetActive(true);  
+        m_CrossHairOrange.SetActive(true);
         m_OrangePortal.SetActive(true);
-        m_OrangePortal.transform.localScale = m_PreviewPortal.transform.localScale; 
+        m_OrangePortal.transform.localScale = m_PreviewPortal.transform.localScale;
         m_OrangePortal.transform.rotation = Quaternion.LookRotation(l_hit.normal);
         m_OrangePortal.transform.position = l_hit.point;
     }
@@ -195,13 +195,13 @@ public class PortalWeaponController : MonoBehaviour
     {
         bool isValid = true;
         RaycastHit l_hit;
-        Vector3 l_CameraPosition = m_Camera.transform.position; 
+        Vector3 l_CameraPosition = m_Camera.transform.position;
 
         for (int i = 0; i < m_ValidPoints.Count; i++)
         {
             Vector3 l_Diretion = m_ValidPoints[i].transform.position - m_Camera.transform.position;
 
-            if (Physics.Raycast(l_CameraPosition,l_Diretion, out l_hit))
+            if (Physics.Raycast(l_CameraPosition, l_Diretion, out l_hit))
             {
                 float l_Angle = Vector3.Angle(l_hit.normal, m_ValidPoints[i].forward);
 

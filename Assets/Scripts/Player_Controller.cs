@@ -182,6 +182,7 @@ public class Player_Controller : MonoBehaviour
     }
 
     public float GetSpeed() { return m_speed; } 
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Portal"))

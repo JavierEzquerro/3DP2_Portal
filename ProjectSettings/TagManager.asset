@@ -4,13 +4,13 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Cube
   - ReflactionCube
   - RefractionCube
   - Portal
   - CompanionCube
   - WhiteWall
   - Turret
+  - SpawnerButton
   layers:
   - Default
   - TransparentFX
