@@ -6,7 +6,6 @@ public class CompanionSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject m_CompanionPrefab;
     [SerializeField] private Transform m_CompanionSpawnPoint;
-    [SerializeField] private Camera m_Camera;
     [SerializeField] private TMP_Text m_ButtonText;
 
     private bool isShowingText = false;

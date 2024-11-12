@@ -41,8 +41,10 @@ public class Player_Controller : MonoBehaviour
     [SerializeField] private AudioClip m_MetalLandingSound;
 
     [Header("Portal")]
-    Vector3 m_MovementDirection; 
-    public float m_TeleportOffset; 
+    public Vector3 m_MovementDirection; 
+    public float m_TeleportOffset;
+    private bool m_EnterPortal;
+    private Portal m_Portal; 
 
     private void Awake()
     {
@@ -93,7 +95,7 @@ public class Player_Controller : MonoBehaviour
         else if (Input.GetKey(m_DownKeyCode))
             m_MovementDirection -= l_forward;
 
-        m_MovementDirection = m_MovementDirection.normalized;
+        m_MovementDirection.Normalize();
 
         if (m_JumpDelayTimer > 0)
         {
@@ -115,10 +117,10 @@ public class Player_Controller : MonoBehaviour
         if (Input.GetKey(m_LeftShiftCode))
             l_speedMultiplier = m_speedMultiplier;
 
-        m_MovementDirection *= m_speed * l_speedMultiplier * Time.deltaTime;
-        m_MovementDirection.y = m_verticalSpeed * Time.deltaTime;
+        Vector3 l_MovementDirection = m_MovementDirection * m_speed * l_speedMultiplier * Time.deltaTime;
+        l_MovementDirection.y = m_verticalSpeed * Time.deltaTime;
 
-        CollisionFlags l_CollisionFlags = m_CharacterController.Move(m_MovementDirection);
+        CollisionFlags l_CollisionFlags = m_CharacterController.Move(l_MovementDirection);
 
         if ((l_CollisionFlags & CollisionFlags.Below) != 0)
         {
@@ -129,7 +131,7 @@ public class Player_Controller : MonoBehaviour
         if ((l_CollisionFlags & CollisionFlags.Above) != 0 && m_verticalSpeed > 0.0f)
             m_verticalSpeed = 0;
 
-        m_CharacterController.Move(m_MovementDirection);
+        m_CharacterController.Move(l_MovementDirection);
 
         if (m_CharacterController.velocity.magnitude > 0.01f)
         {
@@ -138,6 +140,19 @@ public class Player_Controller : MonoBehaviour
         }
         //else
         //m_Animator.SetBool("Walking", false);
+
+        //PORTAL
+
+        if (m_EnterPortal)
+        {
+            Vector3 l_Offset = m_Portal.transform.position - transform.position;
+
+            if (Vector3.Dot(m_Portal.transform.forward , l_Offset.normalized) >= -0.054 && Vector3.Dot(transform.forward, m_Portal.transform.forward) <=  -0.75f)
+            {
+                Teleport(m_Portal, l_Offset);  
+                m_EnterPortal = false;
+            }
+        }
     }
 
     private void DetectSurface()
@@ -187,22 +202,34 @@ public class Player_Controller : MonoBehaviour
     {
         if (other.CompareTag("Portal"))
         {
-            Portal l_portal; 
-            Teleport(l_portal = other.GetComponent<Portal>()); 
+            m_EnterPortal = true;
+            m_Portal = other.GetComponent<Portal>();
+            Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, true); 
         }
     }
 
-    private void Teleport(Portal l_portal)
+    private void OnTriggerExit(Collider other)
     {
-        m_MovementDirection.Normalize();
+        if (other.CompareTag("Portal"))
+        {
+            m_EnterPortal = false;
+            m_Portal = other.GetComponent<Portal>();
+            Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, false);
+        }
+    }
+
+    private void Teleport(Portal l_portal, Vector3 l_Offset)
+    {
         Vector3 l_Position = transform.position + m_MovementDirection * m_TeleportOffset;
         Vector3 l_LocalPosition = l_portal.m_OtherPortalTransform.InverseTransformPoint(l_Position);
         Vector3 l_WorldPosition = l_portal.m_MirrorPortal.transform.TransformPoint(l_LocalPosition);
 
         Vector3 l_Forward = m_MovementDirection; 
-        Vector3 l_LocalForward = l_portal.m_OtherPortalTransform.InverseTransformDirection(m_MovementDirection);
+        Vector3 l_LocalForward = l_portal.m_OtherPortalTransform.InverseTransformDirection(l_Forward);
         Vector3 l_WorldForward = l_portal.m_MirrorPortal.transform.TransformDirection(l_LocalForward);
-      
+
+        Physics.IgnoreCollision(m_CharacterController, m_Portal.m_MirrorPortal.m_WallPortaled, true);
+
         m_CharacterController.enabled = false;   
         transform.position = l_WorldPosition; 
         transform.forward = l_WorldForward; 
