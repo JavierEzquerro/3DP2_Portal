@@ -2,10 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static UnityEditor.PlayerSettings;
 
 public class PortalWeaponController : MonoBehaviour
 {
-    [SerializeField] private GameObject m_PreviewPortal;
+    [SerializeField] private GameObject m_BluePreviewPortal;
+    [SerializeField] private GameObject m_OrangePreviewPortal;
     [SerializeField] private Camera m_Camera;
     [SerializeField] private GameObject m_BluePortal;
     [SerializeField] private GameObject m_OrangePortal;
@@ -15,7 +18,13 @@ public class PortalWeaponController : MonoBehaviour
     [SerializeField] private float m_DistanceStopLerpAttract;
     [SerializeField] private GameObject m_CrossHairBlue;
     [SerializeField] private GameObject m_CrossHairOrange;
+    [SerializeField] private float m_ScrollWheelIncrement;
+    [SerializeField] private float m_AngleValidPortal;
+    [SerializeField] private GameObject m_BulletPortalBlue; 
+    [SerializeField] private GameObject m_BulletPortalOrange;
+    [SerializeField] private Transform m_ShootPoint;
 
+    private Player_Controller m_PlayerController;
     public List<Transform> m_ValidPoints = new List<Transform>();
     public Transform m_AttractPoint;
     private bool m_AttractingObjects;
@@ -24,79 +33,121 @@ public class PortalWeaponController : MonoBehaviour
     private Rigidbody m_RbObjectAttract;
     private BoxCollider m_ObjectCollider;
     public float m_AttractSpeed;
-    private float m_ReSize;
+    private int m_ReSize;
     private Vector3 m_StartScale;
     private float m_CurrentPortalSize;
+    private float m_AttractingPorgress;
+    private float m_Angle;
+    private Transform m_AttachedPreviousParent;
+    private float m_PreviewAnimation;
+    private bool m_CanShootBlue;
+    private bool m_CanShootOrange;
 
     private void Start()
     {
-        m_BluePortal.SetActive(false);
-        m_OrangePortal.SetActive(false);
         m_AttractingObjects = false;
         m_TrapedObject = false;
-        m_ReSize = 1.0f;
+
+        m_ReSize = 0;
         m_StartScale = transform.localScale;
         m_CurrentPortalSize = m_ReSize;
+        m_PreviewAnimation = 0.0f;
+
         m_CrossHairBlue.SetActive(false);
         m_CrossHairOrange.SetActive(false);
+
+        m_Angle = Mathf.Cos(m_AngleValidPortal * Mathf.Deg2Rad);
+        m_PlayerController = GetComponent<Player_Controller>();
+
+        m_BulletPortalBlue.gameObject.SetActive(false);
+        m_BulletPortalBlue.transform.position = m_ShootPoint.position;
+        m_CanShootBlue = true;
+        m_CanShootOrange = true; 
     }
 
     private void Update()
     {
-        m_ReSize = Mathf.Clamp(m_ReSize, 0.5f, 2.0f);   
-
         RaycastHit l_hit;
         Ray l_Ray = m_Camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
-        if (Physics.Raycast(l_Ray.origin, l_Ray.direction, out l_hit, m_DistanceRay))
+        if (Physics.Raycast(l_Ray.origin, l_Ray.direction, out l_hit, m_DistanceRay, ~0, QueryTriggerInteraction.Ignore))
         {
             if (!m_AttractingObjects && !m_TrapedObject)
             {
                 //PORTAL
-                m_PreviewPortal.transform.rotation = Quaternion.LookRotation(l_hit.normal);
-                m_PreviewPortal.transform.position = l_hit.point;
+                m_BluePreviewPortal.transform.rotation = Quaternion.LookRotation(l_hit.normal);
+                m_BluePreviewPortal.transform.position = l_hit.point;
+                m_OrangePreviewPortal.transform.rotation = Quaternion.LookRotation(l_hit.normal);
+                m_OrangePreviewPortal.transform.position = l_hit.point;
 
                 if (IsValidPosition())
                 {
                     //PREVIEW
-                    m_PreviewPortal.SetActive(true);
-
                     if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
                     {
-                        m_PreviewPortal.transform.rotation = Quaternion.LookRotation(l_hit.normal);
-                        m_PreviewPortal.transform.position = l_hit.point;
-
                         float l_ScrollWheel = Input.GetAxis("Mouse ScrollWheel");
 
                         if (l_ScrollWheel > 0)
                         {
-                            m_ReSize += 0.1f + Time.deltaTime;
+                            m_ReSize += 1;
+                            m_PreviewAnimation = 0; 
                         }
                         else if (l_ScrollWheel < 0)
                         {
-                            m_ReSize -= 0.1f + Time.deltaTime;
+                            m_ReSize -= 1;
+                            m_PreviewAnimation = 0;
                         }
 
-                        if (m_ReSize != m_CurrentPortalSize)
-                        {
-                            m_PreviewPortal.transform.localScale = m_StartScale * m_ReSize;
-                            m_CurrentPortalSize = m_ReSize;
-                        }
+                        PreviewPortalAnimation(); 
+
+                        m_ReSize = Mathf.Clamp(m_ReSize, -1, 1);
+
+                        if (Input.GetMouseButton(0))
+                            m_BluePreviewPortal.SetActive(true);
+                        else if (Input.GetMouseButton(1))
+                            m_OrangePreviewPortal.SetActive(true);
                     }
                     else
                     {
-                        m_PreviewPortal.SetActive(false);
+                        m_BluePreviewPortal.SetActive(false);
+                        m_OrangePreviewPortal.SetActive(false);
                     }
 
-                    if (Input.GetMouseButtonUp(0))
-                        ShootPortalBlue(l_hit);
+                    PortalBullet l_bulletBlue = m_BulletPortalBlue.GetComponent<PortalBullet>();
+                    PortalBullet l_bulletOrange = m_BulletPortalOrange.GetComponent<PortalBullet>();
 
-                    if (Input.GetMouseButtonUp(1))
-                        ShootPortalOrange(l_hit);
+                    if (Input.GetMouseButtonUp(0) && m_CanShootBlue)
+                    {
+                        m_BulletPortalBlue.SetActive(true);
+                        l_bulletBlue.Shoot(m_ShootPoint.position, l_Ray.direction);
+                        m_CanShootBlue = false;
+                    }
+
+                    if (Input.GetMouseButtonUp(1) && m_CanShootOrange)
+                    {
+                        m_BulletPortalOrange.SetActive(true);
+                        l_bulletOrange.Shoot(m_ShootPoint.position, l_Ray.direction);
+                        m_CanShootOrange = false;   
+                    }
+
+                    if (l_bulletBlue.m_Colisioned)
+                    {
+                        ActivePortalBlue(l_hit); 
+                        m_CanShootBlue = true;
+                        l_bulletBlue.m_Colisioned = false;
+                    }
+
+                    if (l_bulletOrange.m_Colisioned)
+                    {
+                        ActivePortalOrange(l_hit);
+                        m_CanShootOrange = true;
+                        l_bulletOrange.m_Colisioned = false; 
+                    }
                 }
                 else
                 {
-                    m_PreviewPortal.SetActive(false);
+                    m_BluePreviewPortal.SetActive(false);
+                    m_OrangePreviewPortal.SetActive(false);
                 }
             }
 
@@ -110,16 +161,25 @@ public class PortalWeaponController : MonoBehaviour
             }
         }
 
+        if(m_ObjectAttract == null)
+        {
+            m_TrapedObject = false;
+            m_AttractingObjects = false;
+        }
+
         if (Input.GetMouseButtonDown(0) && m_TrapedObject)
         {
+            m_RbObjectAttract.isKinematic = false;
+            m_ObjectAttract.transform.SetParent(m_AttachedPreviousParent);
             m_TrapedObject = false;
             m_RbObjectAttract.useGravity = true;
             m_ObjectCollider.enabled = true;
             m_RbObjectAttract.AddForce(m_Camera.transform.forward * m_ForceLaunch);
-
         }
         else if (Input.GetMouseButtonDown(1) && m_TrapedObject)
         {
+            m_RbObjectAttract.isKinematic = false;
+            m_ObjectAttract.transform.SetParent(m_AttachedPreviousParent);
             m_TrapedObject = false;
             m_RbObjectAttract.useGravity = true;
             m_ObjectCollider.enabled = true;
@@ -130,23 +190,24 @@ public class PortalWeaponController : MonoBehaviour
     {
         if (m_AttractingObjects)
         {
-            m_ObjectAttract.transform.position = Vector3.Lerp(m_ObjectAttract.transform.position, m_AttractPoint.transform.position, m_AttractSpeed * Time.fixedDeltaTime);
+            m_AttractingPorgress += m_AttractSpeed * Time.deltaTime; 
 
-            if (Vector3.Distance(m_ObjectAttract.transform.position, m_AttractPoint.transform.position) <= m_DistanceStopLerpAttract)
+            m_ObjectAttract.transform.position = Vector3.Lerp(m_ObjectAttract.transform.position, m_AttractPoint.transform.position, m_AttractingPorgress);
+            m_ObjectAttract.transform.forward = Vector3.Lerp(m_ObjectAttract.transform.forward, transform.forward, m_AttractingPorgress);
+
+            if(m_AttractingPorgress >= 1)
             {
-                m_ObjectAttract.transform.position = m_AttractPoint.transform.position;
+                m_ObjectAttract.transform.SetParent(m_AttractPoint.transform);
+                m_ObjectAttract.transform.localPosition = Vector3.zero;
                 m_AttractingObjects = false;
                 m_TrapedObject = true;
+                m_AttractingPorgress = 0;   
             }
         }
 
-
-        if (m_TrapedObject)
+        if (m_TrapedObject && m_RbObjectAttract != null)
         {
-            //m_ObjectAttract.transform.position = m_AttractPoint.transform.position;
-            m_ObjectAttract.transform.position = Vector3.Lerp(m_ObjectAttract.transform.position, m_AttractPoint.transform.position, m_AttractSpeed * Time.fixedDeltaTime);
-            m_ObjectAttract.transform.forward = Vector3.Lerp(m_ObjectAttract.transform.forward, transform.forward, m_AttractSpeed * Time.fixedDeltaTime);        
-
+            m_RbObjectAttract.isKinematic = true;
         }
     }
 
@@ -155,11 +216,13 @@ public class PortalWeaponController : MonoBehaviour
         m_ObjectAttract = l_hit.collider.gameObject;
         m_RbObjectAttract = m_ObjectAttract.GetComponent<Rigidbody>();
         m_ObjectCollider = m_RbObjectAttract.GetComponent<BoxCollider>();
+        m_AttachedPreviousParent = m_RbObjectAttract.transform.parent;  
 
-        bool l_IsTurret = false; 
+
+        bool l_IsTurret = false;
 
         if (l_hit.collider.CompareTag("Turret"))
-                l_IsTurret = true;
+            l_IsTurret = true;
 
         if (l_IsTurret)
         {
@@ -173,20 +236,28 @@ public class PortalWeaponController : MonoBehaviour
         //m_ObjectCollider.enabled = false;
     }
 
-    private void ShootPortalBlue(RaycastHit l_hit)
+    private void ActivePortalBlue(RaycastHit l_hit)
     {
         m_BluePortal.SetActive(true);
+        Portal l_portal = m_BluePortal.GetComponent<Portal>();
+        l_portal.m_WallPortaled = l_hit.collider.GetComponent<Collider>();
+        l_portal.transform.localScale = l_portal.m_StartSizeAnimation;
+        l_portal.m_PortalSize = m_CurrentPortalSize;
+        l_portal.m_PortalAnimation = true;
         m_CrossHairBlue.SetActive(true);
-        m_BluePortal.transform.localScale = m_PreviewPortal.transform.localScale;
         m_BluePortal.transform.rotation = Quaternion.LookRotation(l_hit.normal);
         m_BluePortal.transform.position = l_hit.point;
     }
 
-    private void ShootPortalOrange(RaycastHit l_hit)
+    private void ActivePortalOrange(RaycastHit l_hit)
     {
-        m_CrossHairOrange.SetActive(true);
         m_OrangePortal.SetActive(true);
-        m_OrangePortal.transform.localScale = m_PreviewPortal.transform.localScale;
+        Portal l_portal = m_OrangePortal.GetComponent<Portal>();
+        l_portal.m_WallPortaled = l_hit.collider.GetComponent<Collider>(); 
+        l_portal.transform.localScale = l_portal.m_StartSizeAnimation;
+        l_portal.m_PortalSize = m_CurrentPortalSize;
+        l_portal.m_PortalAnimation = true;
+        m_CrossHairOrange.SetActive(true);
         m_OrangePortal.transform.rotation = Quaternion.LookRotation(l_hit.normal);
         m_OrangePortal.transform.position = l_hit.point;
     }
@@ -201,11 +272,13 @@ public class PortalWeaponController : MonoBehaviour
         {
             Vector3 l_Diretion = m_ValidPoints[i].transform.position - m_Camera.transform.position;
 
-            if (Physics.Raycast(l_CameraPosition, l_Diretion, out l_hit))
+            if (Physics.Raycast(l_CameraPosition, l_Diretion, out l_hit, m_DistanceRay, ~0, QueryTriggerInteraction.Ignore))
             {
-                float l_Angle = Vector3.Angle(l_hit.normal, m_ValidPoints[i].forward);
+                float l_Dotangle = Vector3.Dot(l_hit.normal, m_ValidPoints[i].forward);
 
-                if (Vector3.Distance(m_ValidPoints[i].transform.position, l_hit.point) >= m_ThresholdPortal || !l_hit.collider.CompareTag("WhiteWall") || l_Angle <= 178.0f)
+                if (Vector3.Distance(m_ValidPoints[i].transform.position, l_hit.point) >= m_ThresholdPortal ||
+                    !l_hit.collider.CompareTag("WhiteWall") ||
+                    l_Dotangle >= m_Angle || l_hit.collider.CompareTag("Portal"))
                 {
                     return false;
                 }
@@ -214,6 +287,35 @@ public class PortalWeaponController : MonoBehaviour
                 return false;
         }
         return isValid;
+    }
+
+    public void PreviewPortalAnimation()
+    {
+
+        float l_speedAnimation = 1;
+        m_PreviewAnimation += Time.deltaTime * l_speedAnimation; 
+
+        if (m_ReSize == 1)
+        {
+            m_BluePreviewPortal.transform.localScale = Vector3.Lerp(m_BluePreviewPortal.transform.localScale, m_StartScale * 2, m_PreviewAnimation);
+            m_OrangePreviewPortal.transform.localScale = Vector3.Lerp(m_OrangePreviewPortal.transform.localScale, m_StartScale * 2, m_PreviewAnimation);
+            m_CurrentPortalSize = 2;
+        }
+        else if (m_ReSize == 0)
+        {
+            m_BluePreviewPortal.transform.localScale = Vector3.Lerp(m_BluePreviewPortal.transform.localScale, m_StartScale, m_PreviewAnimation);
+            m_OrangePreviewPortal.transform.localScale = Vector3.Lerp(m_OrangePreviewPortal.transform.localScale, m_StartScale, m_PreviewAnimation);
+            m_CurrentPortalSize = 1;
+        }
+        else if (m_ReSize == -1)
+        {
+            m_BluePreviewPortal.transform.localScale = Vector3.Lerp(m_BluePreviewPortal.transform.localScale, m_StartScale / 2, m_PreviewAnimation);
+            m_OrangePreviewPortal.transform.localScale = Vector3.Lerp(m_OrangePreviewPortal.transform.localScale, m_StartScale / 2, m_PreviewAnimation);
+            m_CurrentPortalSize = 0.5f;
+        }
+
+        if(m_PreviewAnimation >= 1)
+            m_PreviewAnimation = 0;
     }
 
     public void NewSector()

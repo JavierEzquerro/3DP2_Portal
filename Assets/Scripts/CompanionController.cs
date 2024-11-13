@@ -8,12 +8,14 @@ public class CompanionController : MonoBehaviour
     [SerializeField] private float m_TeleportOffset;
     private Vector3 m_MovementDirection;
     private Rigidbody m_Rigidbody;
+    private Vector3 m_StartSize; 
 
     public static Action OnCubeDestroyed;
 
     private void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
+        m_StartSize = transform.localScale; 
     }
 
     private void FixedUpdate()
@@ -41,8 +43,9 @@ public class CompanionController : MonoBehaviour
 
         transform.position = l_WorldPosition;
         transform.forward = l_WorldForward;
-
         m_Rigidbody.velocity = l_WorldForward * m_Rigidbody.velocity.magnitude;
+        Debug.Log(l_portal.m_MirrorPortal.m_PortalSize); 
+        transform.localScale = transform.localScale * l_portal.m_MirrorPortal.m_PortalSize; 
     }
 
     private void OnTriggerEnter(Collider other)

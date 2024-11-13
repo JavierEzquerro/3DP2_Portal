@@ -12,11 +12,13 @@ TagManager:
   - SpawnerButton
   - BouncingSurface
   - LaunchingSurface
+  - Weapon
+  - GravityZero
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Portal
   - Water
   - UI
   - 

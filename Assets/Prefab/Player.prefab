@@ -195,6 +195,7 @@ MonoBehaviour:
   m_DistanceStopLerpAttract: 0.2
   m_CrossHairBlue: {fileID: 0}
   m_CrossHairOrange: {fileID: 0}
+  m_ScrollWheelIncrement: 15
   m_ValidPoints:
   - {fileID: 0}
   - {fileID: 0}

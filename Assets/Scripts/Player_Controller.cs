@@ -24,7 +24,7 @@ public class Player_Controller : MonoBehaviour
     [SerializeField] private float m_pitchSpeed;
     [SerializeField] private float m_minPitch;
     [SerializeField] private float m_maxPitch;
-    [SerializeField] public float m_speed;
+    [SerializeField] public float m_Speed;
     [SerializeField] private float m_speedMultiplier;
     [SerializeField] private float m_verticalSpeed;
     [SerializeField] private float m_JumpSpeed;
@@ -43,15 +43,23 @@ public class Player_Controller : MonoBehaviour
     [SerializeField] private AudioClip m_MetalLandingSound;
     private string m_CurrentSurfaceTag;
 
-    [Header("Portal")]
-    public float m_TeleportOffset;
-    Vector3 m_MovementDirection;
-
     [Header("Surfaces")]
     [SerializeField] private float m_MinBounceForce;
     private float m_InitialBounceSpeed;
     private bool m_HasBounced = false;
     public static Action OnPlayerLaunched;
+
+    [Header("Portal")]
+    public Vector3 m_MovementDirection; 
+    public float m_TeleportOffset;
+    private bool m_EnterPortal;
+    private Portal m_Portal;
+
+    [Header("ZeroGravity")]
+    private ZeroGravity m_ZeroGravity;
+    private bool m_GravityZone;
+    float m_StartSpeed;
+    private Vector3 m_PreviousOffsetFromPortal;
 
     private void Awake()
     {
@@ -66,6 +74,8 @@ public class Player_Controller : MonoBehaviour
         m_Pitch = m_PitchController.localRotation.eulerAngles.x;
         Cursor.lockState = CursorLockMode.Locked;
         m_FootstepTimer = 0f;
+        m_GravityZone = false;
+        m_StartSpeed = m_Speed; 
     }
 
 
@@ -104,7 +114,7 @@ public class Player_Controller : MonoBehaviour
         else if (Input.GetKey(m_DownKeyCode))
             m_MovementDirection -= l_forward;
 
-        m_MovementDirection = m_MovementDirection.normalized;
+        m_MovementDirection.Normalize();
 
         if (m_JumpDelayTimer > 0)
         {
@@ -120,27 +130,41 @@ public class Player_Controller : MonoBehaviour
             m_JumpDelayTimer = m_JumpDelay;
         }
 
-        m_verticalSpeed += Physics.gravity.y * Time.deltaTime;
-
         float l_speedMultiplier = 1.0f;
+
+        /*
         if (Input.GetKey(m_LeftShiftCode))
             l_speedMultiplier = m_speedMultiplier;
+         */
 
-        m_MovementDirection *= m_speed * l_speedMultiplier * Time.deltaTime;
-        m_MovementDirection.y = m_verticalSpeed * Time.deltaTime;
+        Vector3 l_MovementDirection = m_MovementDirection * m_Speed * l_speedMultiplier * Time.deltaTime;
 
-        CollisionFlags l_CollisionFlags = m_CharacterController.Move(m_MovementDirection);
+        if (m_GravityZone)
+        {
+            Debug.Log("ZERO Gravity"); 
+            m_verticalSpeed = 0;
+            l_MovementDirection.y = 0;
+            m_Speed = m_StartSpeed/4;
+            l_MovementDirection += m_ZeroGravity.m_Direction * m_ZeroGravity.m_Speed * Time.deltaTime;    
+        }
+        else
+        {
+            m_Speed = m_StartSpeed;
+            m_verticalSpeed += Physics.gravity.y * Time.deltaTime;
+            l_MovementDirection.y = m_verticalSpeed * Time.deltaTime;
+        }
+        
+        CollisionFlags l_CollisionFlags = m_CharacterController.Move(l_MovementDirection);
 
-        if ((l_CollisionFlags & CollisionFlags.Below) != 0)
+        if ((l_CollisionFlags & CollisionFlags.Below) != 0 && !m_GravityZone)
         {
             m_verticalSpeed = 0;
             l_speedMultiplier = 1;
         }
 
-        if ((l_CollisionFlags & CollisionFlags.Above) != 0 && m_verticalSpeed > 0.0f)
+        if ((l_CollisionFlags & CollisionFlags.Above) != 0 && m_verticalSpeed > 0.0f && !m_GravityZone)
             m_verticalSpeed = 0;
 
-        m_CharacterController.Move(m_MovementDirection);
 
         if (m_CharacterController.velocity.magnitude > 0.01f && m_CharacterController.isGrounded)
         {
@@ -149,7 +173,22 @@ public class Player_Controller : MonoBehaviour
         }
         //else
         //m_Animator.SetBool("Walking", false);
+
+
+        if (m_EnterPortal)
+        {
+            Vector3 l_Offset = m_Portal.transform.position - transform.position;
+        
+             
+            if (Vector3.Dot(m_Portal.transform.forward, l_Offset.normalized) >= -0.054 && Vector3.Dot(transform.forward, m_Portal.transform.forward) <= -0.75f)
+            {
+                Teleport(m_Portal);
+                m_EnterPortal = false;
+            }
+        }
     }
+
+
 
     private void DetectSurface()
     {
@@ -189,7 +228,7 @@ public class Player_Controller : MonoBehaviour
 
     public void SetSpeed(float l_speed)
     {
-        m_speed = l_speed;
+        m_Speed = l_speed;
     }
 
     public float GetSpeed() { return m_speed; }
@@ -198,21 +237,54 @@ public class Player_Controller : MonoBehaviour
     {
         if (other.CompareTag("Portal"))
         {
-            Portal l_portal;
-            Teleport(l_portal = other.GetComponent<Portal>());
+            m_EnterPortal = true;
+            m_Portal = other.GetComponent<Portal>();
+            Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, true); 
+            m_PreviousOffsetFromPortal = m_Portal.transform.position - transform.position;
+        }
+
+        if (other.CompareTag("GravityZero"))
+        {
+            m_GravityZone = true;
+            m_ZeroGravity = other.GetComponent<ZeroGravity>();
+        }
+
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Portal"))
+        {
+            m_EnterPortal = false;
+            m_Portal = other.GetComponent<Portal>();
+            Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, false);
+        }
+        
+        if (other.CompareTag("GravityZero"))
+        {
+            m_ZeroGravity = other.GetComponent<ZeroGravity>(); 
+            m_GravityZone = false;
         }
     }
 
     private void Teleport(Portal l_portal)
     {
-        m_MovementDirection.Normalize();
-        Vector3 l_Position = transform.position + m_MovementDirection * m_TeleportOffset;
-        Vector3 l_LocalPosition = l_portal.m_OtherPortalTransform.InverseTransformPoint(l_Position);
-        Vector3 l_WorldPosition = l_portal.m_MirrorPortal.transform.TransformPoint(l_LocalPosition);
+        Vector3 l_Position = transform.position + m_MovementDirection * m_TeleportOffset; //Obtener Posicion en mundo
+        Vector3 l_LocalPosition = l_portal.m_OtherPortalTransform.InverseTransformPoint(l_Position); //Pasar de Posicion mundo a local
+        Vector3 l_WorldPosition = l_portal.m_MirrorPortal.transform.TransformPoint(l_LocalPosition); //Convertir la local al otro portal. 
 
-        Vector3 l_Forward = m_MovementDirection;
-        Vector3 l_LocalForward = l_portal.m_OtherPortalTransform.InverseTransformDirection(m_MovementDirection);
+        Vector3 l_Forward = m_MovementDirection; 
+        Vector3 l_LocalForward = l_portal.m_OtherPortalTransform.InverseTransformDirection(l_Forward);
         Vector3 l_WorldForward = l_portal.m_MirrorPortal.transform.TransformDirection(l_LocalForward);
+
+        Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, false);
+
+        m_CharacterController.enabled = false;   
+        transform.position = l_WorldPosition; 
+        transform.forward = l_WorldForward; 
+        m_Yaw = transform.eulerAngles.y;
+        m_CharacterController.enabled = true;
+        Debug.Log("Teleport"); 
 
         m_CharacterController.enabled = false;
         transform.position = l_WorldPosition;
