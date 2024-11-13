@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TreeEditor;
@@ -20,13 +21,19 @@ public class Portal : MonoBehaviour
     public GameObject m_Weapon; 
     public GameObject m_CloneWeapon; 
 
+    public LineRenderer m_LaserRenderer; 
+    public bool m_LaserEnabled;
+    public LayerMask m_LayerMask;   
+    private RaycastHit m_RaycastHitLaser;
+
     private void Start()
     {
         m_StartSizePortal = transform.localScale; 
         m_StartSizeAnimation = m_StartSizePortal / 100;
         m_PortalAnimation = false;
         m_AnimationProgress = 0f;
-        m_CloneWeapon.SetActive(true); 
+        m_CloneWeapon.SetActive(true);
+        m_LaserRenderer.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -48,6 +55,49 @@ public class Portal : MonoBehaviour
      
         if (m_PortalAnimation)
             PortalAnimation();
+
+        m_LaserRenderer.gameObject.SetActive(m_LaserEnabled);
+        m_LaserEnabled = false; 
+    }
+
+    public void RayReflection(Ray ray, RaycastHit hit)
+    {
+        if (m_LaserEnabled)
+            return; 
+
+        Vector3 l_LaserPosition = hit.point;
+        Vector3 l_LaserLocalPosition = m_OtherPortalTransform.InverseTransformPoint(l_LaserPosition);
+        Vector3 l_WorldPosition = m_MirrorPortal.transform.TransformPoint(l_LaserLocalPosition);
+
+        Vector3 l_Forward = ray.direction.normalized;
+        Vector3 l_LocalForward = m_OtherPortalTransform.InverseTransformDirection(l_Forward);
+        Vector3 l_WorldForward = m_MirrorPortal.transform.TransformDirection(l_LocalForward);
+
+        m_LaserRenderer.transform.position = l_WorldPosition;
+        m_LaserRenderer.transform.forward = l_WorldForward;
+
+        m_LaserEnabled = true;
+
+        Ray l_Ray = new Ray(m_LaserRenderer.transform.position, m_LaserRenderer.transform.forward);
+        float m_MaxDistance = 200;
+
+        if (Physics.Raycast(l_Ray, out RaycastHit l_HitInfo, m_MaxDistance, m_LayerMask.value))
+        {
+            m_LaserRenderer.SetPosition(1, new Vector3(0, 0, l_HitInfo.distance));
+
+            if (l_HitInfo.collider.CompareTag("RefractionCube"))
+            {
+                //Reflect ray
+                l_HitInfo.collider.GetComponent<RefractionCube>().CreateRefraction();
+            }
+            else if (l_HitInfo.collider.CompareTag("Turret"))
+            {
+                //Animacion
+                Destroy(l_HitInfo.collider.gameObject);
+            }
+        }
+        else
+            m_LaserRenderer.gameObject.SetActive(false);
     }
 
     public void PortalAnimation()

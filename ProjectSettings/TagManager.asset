@@ -12,11 +12,12 @@ TagManager:
   - Turret
   - SpawnerButton
   - Weapon
+  - GravityZero
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Portal
   - Water
   - UI
   - 

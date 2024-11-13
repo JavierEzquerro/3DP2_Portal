@@ -12,7 +12,7 @@ public class WindowCollider : MonoBehaviour
     {
         if (other.CompareTag("Weapon"))
         {
-            Debug.Log("Clone");
+           // Debug.Log("Clone");
             m_MirrorPortal.m_CloneWeapon.SetActive(true);   
         }
     }
