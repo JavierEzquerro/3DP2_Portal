@@ -231,7 +231,7 @@ public class Player_Controller : MonoBehaviour
         m_Speed = l_speed;
     }
 
-    public float GetSpeed() { return m_speed; }
+    public float GetSpeed() { return m_Speed; }
 
     private void OnTriggerEnter(Collider other)
     {

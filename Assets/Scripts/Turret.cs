@@ -17,20 +17,12 @@ public class Torret : MonoBehaviour
             if (Physics.Raycast(l_Ray, out RaycastHit l_HitInfo, m_MaxDistance, m_LayerMask.value))
                 m_LaserRenderer.SetPosition(1, new Vector3(0, 0, l_HitInfo.distance));
 
-            float l_Distance = l_HitInfo.distance;
             m_LaserRenderer.gameObject.SetActive(true);
+
             if (l_HitInfo.collider.CompareTag("RefractionCube"))
             {
-                float l_Distance = l_HitInfo.distance;
                 m_LaserRenderer.SetPosition(1, new Vector3(0, 0, l_HitInfo.distance));
                 m_LaserRenderer.gameObject.SetActive(true);
-                if (l_HitInfo.collider.CompareTag("RefractionCube"))
-                {
-                    //Reflect ray
-                    l_HitInfo.collider.GetComponent<RefractionCube>().CreateRefraction();
-                }
-                else if (l_HitInfo.collider.CompareTag("Turret"))
-                    Destroy(l_HitInfo.collider.gameObject);
             }
             else if (l_HitInfo.collider.CompareTag("Turret"))
             {
