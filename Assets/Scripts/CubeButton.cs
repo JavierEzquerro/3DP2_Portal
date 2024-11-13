@@ -7,19 +7,21 @@ public class CubeButton : MonoBehaviour
 {
     [SerializeField] private Animator m_CubeAnimator;
 
-    public UnityEvent m_Event;
+    public UnityEvent m_OnButtonClickedEvent;
+    public UnityEvent m_OnButtonDeClickedEvent;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("CompanionCube"))
         {
             m_CubeAnimator.SetBool("CubeButtonPressed", true);
-            m_Event?.Invoke();
+            m_OnButtonClickedEvent?.Invoke();
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
         m_CubeAnimator.SetBool("CubeButtonPressed", false);
+        m_OnButtonDeClickedEvent?.Invoke();
     }
 }

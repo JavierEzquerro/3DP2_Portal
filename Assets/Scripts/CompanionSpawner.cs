@@ -6,41 +6,64 @@ public class CompanionSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject m_CompanionPrefab;
     [SerializeField] private Transform m_CompanionSpawnPoint;
-    [SerializeField] private Camera m_Camera;
+    [SerializeField] private Animator m_CompanionSpawnerAnimatior;
     [SerializeField] private TMP_Text m_ButtonText;
 
-    private bool isShowingText = false;
-    private bool playerInTrigger = false;
+    private bool m_PlayerInTrigger = false;
+    public bool m_CubeAlreadyExists = false;
+
+    private void OnEnable()
+    {
+        CompanionController.OnCubeDestroyed += CompanionCubeDestroyed;
+    }
+
+    private void OnDisable()
+    {
+        CompanionController.OnCubeDestroyed -= CompanionCubeDestroyed;
+    }
 
     private void Update()
     {
-        if (playerInTrigger && Input.GetKeyDown(KeyCode.E))
+        if (m_PlayerInTrigger && Input.GetKeyDown(KeyCode.E) && m_CubeAlreadyExists == false)
         {
-            Spawn();
+            StartCoroutine(Spawn());
         }
     }
 
     private IEnumerator ShowTextCoroutine()
     {
-        isShowingText = true;
         m_ButtonText.enabled = true;
         m_ButtonText.text = "Press E to spawn a cube";
         yield return new WaitForSeconds(2.0f);
         m_ButtonText.enabled = false;
-        isShowingText = false;
     }
 
-    public void Spawn()
+    public IEnumerator Spawn()
     {
-        GameObject companion = Instantiate(m_CompanionPrefab, m_CompanionSpawnPoint.position, m_CompanionSpawnPoint.rotation);
-        companion.SetActive(true);
+        m_CubeAlreadyExists = true;
+        GameObject m_Companion = Instantiate(m_CompanionPrefab);
+        m_Companion.SetActive(true);
+        m_Companion.transform.position = m_CompanionSpawnPoint.transform.position;
+        m_Companion.transform.rotation = m_CompanionSpawnPoint.transform.rotation;
+
+        m_CompanionSpawnerAnimatior.SetBool("SpawnerButtonClicked", true);
+        yield return null;
+        AnimatorClipInfo[] l_CurrentClipInfo = m_CompanionSpawnerAnimatior.GetCurrentAnimatorClipInfo(0);
+        float l_CurrentClipLength = l_CurrentClipInfo[0].clip.length;
+        yield return new WaitForSeconds(l_CurrentClipLength);
+        m_CompanionSpawnerAnimatior.SetBool("SpawnerButtonClicked", false);
+    }
+
+    private void CompanionCubeDestroyed()
+    {
+        m_CubeAlreadyExists = false;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            playerInTrigger = true;
+            m_PlayerInTrigger = true;
 
             StartCoroutine(ShowTextCoroutine());
         }
@@ -50,26 +73,8 @@ public class CompanionSpawner : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            playerInTrigger = false;
+            m_PlayerInTrigger = false;
             m_ButtonText.enabled = false;
-            isShowingText = false;
         }
     }
 }
-
-/*Ray ray = m_Camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-RaycastHit hit;
-
-if (Physics.Raycast(ray, out hit) && hit.collider.CompareTag("SpawnerButton"))
-{
-    if (isShowingText == false)
-        StartCoroutine(ShowTextCoroutine());
-
-    if (Input.GetKeyDown(KeyCode.E))
-        Spawn();
-}
-else
-{
-    m_ButtonText.enabled = false;
-    isShowingText = false;
-}*/

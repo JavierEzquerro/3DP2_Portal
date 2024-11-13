@@ -157,6 +157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dc3a649d7409b24fa409643d1d38933, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_GoToPosition: {fileID: 0}
   m_PitchController: {fileID: 4838341580365500763}
   m_Camera: {fileID: 4558642263430438723}
   m_YawSpeed: 600
@@ -171,6 +172,7 @@ MonoBehaviour:
   m_MetalJumpSound: {fileID: 0}
   m_MetalLandingSound: {fileID: 0}
   m_TeleportOffset: 3
+  m_MinBounceForce: 4.5
 --- !u!114 &4810978796021309454
 MonoBehaviour:
   m_ObjectHideFlags: 0

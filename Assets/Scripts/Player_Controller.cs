@@ -7,13 +7,16 @@ using UnityEngine;
 public class Player_Controller : MonoBehaviour
 {
     private CharacterController m_CharacterController;
-   // private Animator m_Animator;
+    [SerializeField] private GameObject m_GoToPosition;
+    // private Animator m_Animator;
     public Transform m_PitchController;
     private float m_Yaw;
     private float m_Pitch;
     private float m_FootstepTimer;
     private float m_JumpDelay = 0.1f;
     private float m_JumpDelayTimer = 0f;
+    public bool m_CanMove { get; set; } = true;
+
 
     public Camera m_Camera;
 
@@ -36,13 +39,19 @@ public class Player_Controller : MonoBehaviour
     private KeyCode m_JumpKeyCode = KeyCode.Space;
 
     [Header("Audio")]
-    private string m_CurrentSurfaceTag;
     [SerializeField] private AudioClip m_MetalJumpSound;
     [SerializeField] private AudioClip m_MetalLandingSound;
+    private string m_CurrentSurfaceTag;
 
     [Header("Portal")]
-    Vector3 m_MovementDirection; 
-    public float m_TeleportOffset; 
+    public float m_TeleportOffset;
+    Vector3 m_MovementDirection;
+
+    [Header("Surfaces")]
+    [SerializeField] private float m_MinBounceForce;
+    private float m_InitialBounceSpeed;
+    private bool m_HasBounced = false;
+    public static Action OnPlayerLaunched;
 
     private void Awake()
     {
@@ -78,6 +87,8 @@ public class Player_Controller : MonoBehaviour
 
         Vector3 l_forward = new Vector3(Mathf.Sin(l_forwardAngle), 0, Mathf.Cos(l_forwardAngle));
         Vector3 l_right = new Vector3(Mathf.Sin(l_rightAngle), 0, Mathf.Cos(l_rightAngle));
+
+        if (!m_CanMove) return;
 
         m_MovementDirection = Vector3.zero;
 
@@ -131,9 +142,9 @@ public class Player_Controller : MonoBehaviour
 
         m_CharacterController.Move(m_MovementDirection);
 
-        if (m_CharacterController.velocity.magnitude > 0.01f)
+        if (m_CharacterController.velocity.magnitude > 0.01f && m_CharacterController.isGrounded)
         {
-           // m_Animator.SetBool("Walking", true);
+            // m_Animator.SetBool("Walking", true);
             HandleFootstepSound();
         }
         //else
@@ -162,13 +173,13 @@ public class Player_Controller : MonoBehaviour
             switch (m_CurrentSurfaceTag)
             {
                 case "Metal":
-                    //SoundsManager.instance.PlayFootstepSound(transform, 0.4f, SoundsManager.SurfaceType.Metal);
+                    SoundsManager.instance.PlayFootstepSound(transform, 0.4f, SoundsManager.SurfaceType.Metal);
                     break;
-                case "Mud":
-                    //SoundsManager.instance.PlayFootstepSound(transform, 0.4f, SoundsManager.SurfaceType.Mud);
+                case "Rock":
+                    SoundsManager.instance.PlayFootstepSound(transform, 0.4f, SoundsManager.SurfaceType.Rock);
                     break;
                 default:
-                    //SoundsManager.instance.PlayFootstepSound(transform, 0.4f, SoundsManager.SurfaceType.Default);
+                    SoundsManager.instance.PlayFootstepSound(transform, 0.4f, SoundsManager.SurfaceType.Default);
                     break;
             }
 
@@ -181,14 +192,14 @@ public class Player_Controller : MonoBehaviour
         m_speed = l_speed;
     }
 
-    public float GetSpeed() { return m_speed; } 
+    public float GetSpeed() { return m_speed; }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Portal"))
         {
-            Portal l_portal; 
-            Teleport(l_portal = other.GetComponent<Portal>()); 
+            Portal l_portal;
+            Teleport(l_portal = other.GetComponent<Portal>());
         }
     }
 
@@ -199,15 +210,37 @@ public class Player_Controller : MonoBehaviour
         Vector3 l_LocalPosition = l_portal.m_OtherPortalTransform.InverseTransformPoint(l_Position);
         Vector3 l_WorldPosition = l_portal.m_MirrorPortal.transform.TransformPoint(l_LocalPosition);
 
-        Vector3 l_Forward = m_MovementDirection; 
+        Vector3 l_Forward = m_MovementDirection;
         Vector3 l_LocalForward = l_portal.m_OtherPortalTransform.InverseTransformDirection(m_MovementDirection);
         Vector3 l_WorldForward = l_portal.m_MirrorPortal.transform.TransformDirection(l_LocalForward);
-      
-        m_CharacterController.enabled = false;   
-        transform.position = l_WorldPosition; 
-        transform.forward = l_WorldForward; 
+
+        m_CharacterController.enabled = false;
+        transform.position = l_WorldPosition;
+        transform.forward = l_WorldForward;
         m_Yaw = transform.eulerAngles.y;
-        m_CharacterController.enabled = true; 
+        m_CharacterController.enabled = true;
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit collision)
+    {
+        if (collision.collider.CompareTag("LaunchingSurface"))
+        {
+            OnPlayerLaunched?.Invoke();
+        }
+        else if (collision.collider.CompareTag("BouncingSurface"))
+        {
+            if (!m_HasBounced)
+            {
+                m_InitialBounceSpeed = Mathf.Max(Mathf.Abs(m_verticalSpeed), m_MinBounceForce);
+                m_HasBounced = true;
+            }
+
+            m_verticalSpeed = m_InitialBounceSpeed;
+        }
+        else
+        {
+            m_HasBounced = false;
+        }
     }
 }
 

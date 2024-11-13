@@ -1,12 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CompanionTeleport : MonoBehaviour
+public class CompanionController : MonoBehaviour
 {
     [SerializeField] private float m_TeleportOffset;
     private Vector3 m_MovementDirection;
     private Rigidbody m_Rigidbody;
+
+    public static Action OnCubeDestroyed;
 
     private void Start()
     {
@@ -49,5 +52,10 @@ public class CompanionTeleport : MonoBehaviour
             Portal l_portal = other.GetComponent<Portal>();
             Teleport(l_portal);
         }
+    }
+
+    private void OnDestroy()
+    {
+        OnCubeDestroyed?.Invoke();
     }
 }
