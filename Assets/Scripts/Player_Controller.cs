@@ -180,7 +180,7 @@ public class Player_Controller : MonoBehaviour
             Vector3 l_Offset = m_Portal.transform.position - transform.position;
         
              
-            if (Vector3.Dot(m_Portal.transform.forward, l_Offset.normalized) >= -0.054 && Vector3.Dot(transform.forward, m_Portal.transform.forward) <= -0.75f)
+            if (Vector3.Dot(m_Portal.transform.forward, l_Offset.normalized) >0)
             {
                 Teleport(m_Portal);
                 m_EnterPortal = false;
@@ -279,13 +279,7 @@ public class Player_Controller : MonoBehaviour
 
         Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, false);
 
-        m_CharacterController.enabled = false;   
-        transform.position = l_WorldPosition; 
-        transform.forward = l_WorldForward; 
-        m_Yaw = transform.eulerAngles.y;
-        m_CharacterController.enabled = true;
         Debug.Log("Teleport"); 
-
         m_CharacterController.enabled = false;
         transform.position = l_WorldPosition;
         transform.forward = l_WorldForward;

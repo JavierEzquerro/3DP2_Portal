@@ -18,13 +18,12 @@ public class Portal : MonoBehaviour
     private Vector3 m_StartSizePortal;
 
     public Collider m_WallPortaled;
-    public GameObject m_Weapon; 
-    public GameObject m_CloneWeapon; 
 
     public LineRenderer m_LaserRenderer; 
     public bool m_LaserEnabled;
     public LayerMask m_LayerMask;   
     private RaycastHit m_RaycastHitLaser;
+    public float m_LaserOffset; 
 
     private void Start()
     {
@@ -32,7 +31,6 @@ public class Portal : MonoBehaviour
         m_StartSizeAnimation = m_StartSizePortal / 100;
         m_PortalAnimation = false;
         m_AnimationProgress = 0f;
-        m_CloneWeapon.SetActive(true);
         m_LaserRenderer.gameObject.SetActive(false);
     }
 
@@ -73,17 +71,18 @@ public class Portal : MonoBehaviour
         Vector3 l_LocalForward = m_OtherPortalTransform.InverseTransformDirection(l_Forward);
         Vector3 l_WorldForward = m_MirrorPortal.transform.TransformDirection(l_LocalForward);
 
-        m_LaserRenderer.transform.position = l_WorldPosition;
         m_LaserRenderer.transform.forward = l_WorldForward;
-
+        m_LaserRenderer.transform.position = l_WorldPosition;
+        m_LaserRenderer.transform.localScale = Vector3.one; 
         m_LaserEnabled = true;
 
-        Ray l_Ray = new Ray(m_LaserRenderer.transform.position, m_LaserRenderer.transform.forward);
+        Ray l_Ray = new Ray(m_LaserRenderer.transform.position + m_LaserRenderer.transform.forward* m_LaserOffset, m_LaserRenderer.transform.forward);
         float m_MaxDistance = 200;
 
         if (Physics.Raycast(l_Ray, out RaycastHit l_HitInfo, m_MaxDistance, m_LayerMask.value))
         {
-            m_LaserRenderer.SetPosition(1, new Vector3(0, 0, l_HitInfo.distance));
+            float l_Distance = Vector3.Distance(m_LaserRenderer.transform.position, l_HitInfo.point);
+            m_LaserRenderer.SetPosition(1, new Vector3(0, 0, l_Distance));
 
             if (l_HitInfo.collider.CompareTag("RefractionCube"))
             {
@@ -107,10 +106,12 @@ public class Portal : MonoBehaviour
 
         transform.localScale = Vector3.Lerp(m_StartSizeAnimation, l_Size, m_AnimationProgress);
 
+        transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, m_StartSizePortal.z);
+
         if (m_AnimationProgress >= 1f)
         {
             m_PortalAnimation = false;
-            m_AnimationProgress = 0f;   
+            m_AnimationProgress = 0f;  
         }
     }
 } 

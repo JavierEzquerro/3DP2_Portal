@@ -20,8 +20,8 @@ public class PortalWeaponController : MonoBehaviour
     [SerializeField] private GameObject m_CrossHairOrange;
     [SerializeField] private float m_ScrollWheelIncrement;
     [SerializeField] private float m_AngleValidPortal;
-    [SerializeField] private GameObject m_BulletPortalBlue; 
-    [SerializeField] private GameObject m_BulletPortalOrange;
+    [SerializeField] private PortalBullet m_BulletPortalBlue; 
+    [SerializeField] private PortalBullet m_BulletPortalOrange;
     [SerializeField] private Transform m_ShootPoint;
 
     private Player_Controller m_PlayerController;
@@ -35,13 +35,15 @@ public class PortalWeaponController : MonoBehaviour
     public float m_AttractSpeed;
     private int m_ReSize;
     private Vector3 m_StartScale;
-    private float m_CurrentPortalSize;
+    private float m_CurrentPortalSize; 
     private float m_AttractingPorgress;
     private float m_Angle;
     private Transform m_AttachedPreviousParent;
     private float m_PreviewAnimation;
     private bool m_CanShootBlue;
     private bool m_CanShootOrange;
+    private RaycastHit m_HitCollisoned;
+
 
     private void Start()
     {
@@ -49,7 +51,7 @@ public class PortalWeaponController : MonoBehaviour
         m_TrapedObject = false;
 
         m_ReSize = 0;
-        m_StartScale = transform.localScale;
+        m_StartScale = Vector3.one;
         m_CurrentPortalSize = m_ReSize;
         m_PreviewAnimation = 0.0f;
 
@@ -59,8 +61,13 @@ public class PortalWeaponController : MonoBehaviour
         m_Angle = Mathf.Cos(m_AngleValidPortal * Mathf.Deg2Rad);
         m_PlayerController = GetComponent<Player_Controller>();
 
+       //BULLET PORTAL
         m_BulletPortalBlue.gameObject.SetActive(false);
         m_BulletPortalBlue.transform.position = m_ShootPoint.position;
+
+        m_BulletPortalOrange.gameObject.SetActive(false);
+        m_BulletPortalOrange.transform.position = m_ShootPoint.position;
+
         m_CanShootBlue = true;
         m_CanShootOrange = true; 
     }
@@ -103,9 +110,17 @@ public class PortalWeaponController : MonoBehaviour
                         m_ReSize = Mathf.Clamp(m_ReSize, -1, 1);
 
                         if (Input.GetMouseButton(0))
+                        {
                             m_BluePreviewPortal.SetActive(true);
+                            m_CanShootBlue = true;  
+                            m_CanShootOrange = false;   
+                        }
                         else if (Input.GetMouseButton(1))
+                        {
                             m_OrangePreviewPortal.SetActive(true);
+                            m_CanShootOrange = true; 
+                            m_CanShootBlue = false;
+                        }
                     }
                     else
                     {
@@ -113,35 +128,20 @@ public class PortalWeaponController : MonoBehaviour
                         m_OrangePreviewPortal.SetActive(false);
                     }
 
-                    PortalBullet l_bulletBlue = m_BulletPortalBlue.GetComponent<PortalBullet>();
-                    PortalBullet l_bulletOrange = m_BulletPortalOrange.GetComponent<PortalBullet>();
-
                     if (Input.GetMouseButtonUp(0) && m_CanShootBlue)
                     {
-                        m_BulletPortalBlue.SetActive(true);
-                        l_bulletBlue.Shoot(m_ShootPoint.position, l_Ray.direction);
+                        m_HitCollisoned = l_hit;    
+                        m_BulletPortalBlue.gameObject.SetActive(true);
+                        m_BulletPortalBlue.Shoot(m_ShootPoint.position, l_Ray.direction);
                         m_CanShootBlue = false;
                     }
 
                     if (Input.GetMouseButtonUp(1) && m_CanShootOrange)
                     {
-                        m_BulletPortalOrange.SetActive(true);
-                        l_bulletOrange.Shoot(m_ShootPoint.position, l_Ray.direction);
+                        m_HitCollisoned = l_hit;
+                        m_BulletPortalOrange.gameObject.SetActive(true);
+                        m_BulletPortalOrange.Shoot(m_ShootPoint.position, l_Ray.direction);
                         m_CanShootOrange = false;   
-                    }
-
-                    if (l_bulletBlue.m_Colisioned)
-                    {
-                        ActivePortalBlue(l_hit); 
-                        m_CanShootBlue = true;
-                        l_bulletBlue.m_Colisioned = false;
-                    }
-
-                    if (l_bulletOrange.m_Colisioned)
-                    {
-                        ActivePortalOrange(l_hit);
-                        m_CanShootOrange = true;
-                        l_bulletOrange.m_Colisioned = false; 
                     }
                 }
                 else
@@ -149,7 +149,9 @@ public class PortalWeaponController : MonoBehaviour
                     m_BluePreviewPortal.SetActive(false);
                     m_OrangePreviewPortal.SetActive(false);
                 }
+
             }
+
 
             //ATTRACT OBJECTS
             if (l_hit.collider.CompareTag("CompanionCube") || l_hit.collider.CompareTag("Turret"))
@@ -161,7 +163,21 @@ public class PortalWeaponController : MonoBehaviour
             }
         }
 
-        if(m_ObjectAttract == null)
+        if (m_BulletPortalBlue.m_Colisioned)
+        {
+            ActivePortalBlue(m_HitCollisoned);
+            m_CanShootBlue = true;
+            m_BulletPortalBlue.m_Colisioned = false;
+        }
+
+        if (m_BulletPortalOrange.m_Colisioned)
+        {
+            ActivePortalOrange(m_HitCollisoned);
+            m_CanShootOrange = true;
+            m_BulletPortalOrange.m_Colisioned = false;
+        }
+
+        if (m_ObjectAttract == null)
         {
             m_TrapedObject = false;
             m_AttractingObjects = false;
@@ -272,7 +288,7 @@ public class PortalWeaponController : MonoBehaviour
         {
             Vector3 l_Diretion = m_ValidPoints[i].transform.position - m_Camera.transform.position;
 
-            if (Physics.Raycast(l_CameraPosition, l_Diretion, out l_hit, m_DistanceRay, ~0, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(l_CameraPosition, l_Diretion, out l_hit, m_DistanceRay))
             {
                 float l_Dotangle = Vector3.Dot(l_hit.normal, m_ValidPoints[i].forward);
 
