@@ -7,14 +7,16 @@ public class SoundsManager : MonoBehaviour
     {
         Metal,
         Rock,
+        Glass,
         Default
     }
 
     [SerializeField] private AudioSource m_SoundManager;
     [SerializeField] private AudioSource m_SoundManager3D;
     [SerializeField] private AudioClip[] m_AmbienceSoundClips;
-    [SerializeField] private AudioClip[] m_RockFootstepClips;
     [SerializeField] private AudioClip[] m_MetalFootstepClips;
+    [SerializeField] private AudioClip[] m_RockFootstepClips;
+    [SerializeField] private AudioClip[] m_GlassFootstepClips;
     [SerializeField] private AudioClip[] m_DefaultFootstepClips;
 
     private int index;
@@ -55,6 +57,8 @@ public class SoundsManager : MonoBehaviour
                 return m_MetalFootstepClips;
             case SurfaceType.Rock:
                 return m_RockFootstepClips;
+            case SurfaceType.Glass:
+                return m_GlassFootstepClips;
             default:
                 return m_DefaultFootstepClips;
         }

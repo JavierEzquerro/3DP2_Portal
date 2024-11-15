@@ -157,22 +157,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dc3a649d7409b24fa409643d1d38933, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_GoToPosition: {fileID: 0}
   m_PitchController: {fileID: 4838341580365500763}
   m_Camera: {fileID: 4558642263430438723}
   m_YawSpeed: 600
   m_pitchSpeed: 300
   m_minPitch: -40
   m_maxPitch: 80
-  m_speed: 2.5
+  m_Speed: 0
   m_speedMultiplier: 2
   m_verticalSpeed: -20
   m_JumpSpeed: 4
   m_footstepInterval: 0.5
-  m_MetalJumpSound: {fileID: 0}
-  m_MetalLandingSound: {fileID: 0}
-  m_TeleportOffset: 3
+  m_EnterPortalSound: {fileID: 8300000, guid: 14b1e18926b068141a67c8d2a4486d12, type: 3}
+  m_ExitPortalSound: {fileID: 8300000, guid: 6b0d6a65c8a1b7b4080e70bc784d4dfe, type: 3}
   m_MinBounceForce: 4.5
+  m_MovementDirection: {x: 0, y: 0, z: 0}
+  m_TeleportOffset: 3
 --- !u!114 &4810978796021309454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,7 +185,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fce5310ad673b94092001995938b17e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PreviewPortal: {fileID: 0}
+  m_BluePreviewPortal: {fileID: 0}
+  m_OrangePreviewPortal: {fileID: 0}
   m_Camera: {fileID: 4558642263430438723}
   m_BluePortal: {fileID: 0}
   m_OrangePortal: {fileID: 0}
@@ -196,6 +197,12 @@ MonoBehaviour:
   m_CrossHairBlue: {fileID: 0}
   m_CrossHairOrange: {fileID: 0}
   m_ScrollWheelIncrement: 15
+  m_AngleValidPortal: 0
+  m_BulletPortalBlue: {fileID: 0}
+  m_BulletPortalOrange: {fileID: 0}
+  m_ShootPoint: {fileID: 0}
+  m_BluePortalSound: {fileID: 8300000, guid: 3d199e408bb6b2342b03f05f749dc4b6, type: 3}
+  m_OrangePortalSound: {fileID: 8300000, guid: 24bc4df74c4f66b4bb4d1c491cc852d1, type: 3}
   m_ValidPoints:
   - {fileID: 0}
   - {fileID: 0}

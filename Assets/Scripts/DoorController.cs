@@ -16,6 +16,9 @@ public class DoorController : MonoBehaviour
 
     public bool m_OpenDoor { get; set; }
 
+    [Header("Sounds")]
+    [SerializeField] private AudioClip m_OpenDoorSound;
+    [SerializeField] private AudioClip m_CloseDoorSound;
 
     private void Update()
     {
@@ -29,11 +32,21 @@ public class DoorController : MonoBehaviour
             m_DoorAnimator.SetBool("OpenDoor", true);
             m_DoorAnimator.SetBool("CloseDoor", false);
         }
-        else
+        else if (m_OpenDoor == false && m_DoorType == DoorType.ButtonDoor)
         {
             m_DoorAnimator.SetBool("OpenDoor", false);
             m_DoorAnimator.SetBool("CloseDoor", true);
         }
+    }
+
+    public void PlayOpenDoorSound()
+    {
+        SoundsManager.instance.PlaySoundClip(m_OpenDoorSound, transform, 0.2f);
+    }
+
+    public void PlayCloseDoorSound()
+    {
+        SoundsManager.instance.PlaySoundClip(m_CloseDoorSound, transform, 0.2f);
     }
 
     private void OnTriggerEnter(Collider other)

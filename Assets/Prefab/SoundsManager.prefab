@@ -50,8 +50,10 @@ MonoBehaviour:
   m_SoundManager3D: {fileID: 0}
   m_AmbienceSoundClips: []
   m_RockFootstepClips:
-  - {fileID: 8300000, guid: ad4f9d4e5e565be4794efe314cc6c380, type: 3}
-  - {fileID: 8300000, guid: e489f9bb26c7b0a44a4ec671ad1fa506, type: 3}
+  - {fileID: 8300000, guid: ace135eb7f4055f4385031273901d955, type: 3}
+  - {fileID: 8300000, guid: d7af654b3623b974ab908579ea412f47, type: 3}
+  - {fileID: 8300000, guid: a8daa5f0a636f934f9dd27e4e8ad99a9, type: 3}
+  - {fileID: 8300000, guid: 9eb84963e8ed62e42a43be4485a1a482, type: 3}
   m_MetalFootstepClips: []
   m_DefaultFootstepClips:
   - {fileID: 8300000, guid: ad4f9d4e5e565be4794efe314cc6c380, type: 3}

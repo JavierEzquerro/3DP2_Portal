@@ -7,7 +7,6 @@ using UnityEngine;
 public class Player_Controller : MonoBehaviour
 {
     private CharacterController m_CharacterController;
-    [SerializeField] private GameObject m_GoToPosition;
     // private Animator m_Animator;
     public Transform m_PitchController;
     private float m_Yaw;
@@ -16,7 +15,6 @@ public class Player_Controller : MonoBehaviour
     private float m_JumpDelay = 0.1f;
     private float m_JumpDelayTimer = 0f;
     public bool m_CanMove { get; set; } = true;
-
 
     public Camera m_Camera;
 
@@ -39,8 +37,8 @@ public class Player_Controller : MonoBehaviour
     private KeyCode m_JumpKeyCode = KeyCode.Space;
 
     [Header("Audio")]
-    [SerializeField] private AudioClip m_MetalJumpSound;
-    [SerializeField] private AudioClip m_MetalLandingSound;
+    [SerializeField] private AudioClip m_EnterPortalSound;
+    [SerializeField] private AudioClip m_ExitPortalSound;
     private string m_CurrentSurfaceTag;
 
     [Header("Surfaces")]
@@ -50,7 +48,7 @@ public class Player_Controller : MonoBehaviour
     public static Action OnPlayerLaunched;
 
     [Header("Portal")]
-    public Vector3 m_MovementDirection; 
+    public Vector3 m_MovementDirection;
     public float m_TeleportOffset;
     private bool m_EnterPortal;
     private Portal m_Portal;
@@ -75,9 +73,8 @@ public class Player_Controller : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         m_FootstepTimer = 0f;
         m_GravityZone = false;
-        m_StartSpeed = m_Speed; 
+        m_StartSpeed = m_Speed;
     }
-
 
     void Update()
     {
@@ -121,6 +118,12 @@ public class Player_Controller : MonoBehaviour
             m_JumpDelayTimer -= Time.deltaTime;
         }
 
+        if (m_HasBounced)
+        {
+            m_verticalSpeed = m_InitialBounceSpeed;
+            m_HasBounced = false;
+        }
+
         DetectSurface();
 
         if (m_CharacterController.isGrounded && Input.GetKey(m_JumpKeyCode) && m_JumpDelayTimer <= 0f)
@@ -141,11 +144,11 @@ public class Player_Controller : MonoBehaviour
 
         if (m_GravityZone)
         {
-            Debug.Log("ZERO Gravity"); 
+            Debug.Log("ZERO Gravity");
             m_verticalSpeed = 0;
             l_MovementDirection.y = 0;
-            m_Speed = m_StartSpeed/4;
-            l_MovementDirection += m_ZeroGravity.m_Direction * m_ZeroGravity.m_Speed * Time.deltaTime;    
+            m_Speed = m_StartSpeed / 4;
+            l_MovementDirection += m_ZeroGravity.m_Direction * m_ZeroGravity.m_Speed * Time.deltaTime;
         }
         else
         {
@@ -153,7 +156,7 @@ public class Player_Controller : MonoBehaviour
             m_verticalSpeed += Physics.gravity.y * Time.deltaTime;
             l_MovementDirection.y = m_verticalSpeed * Time.deltaTime;
         }
-        
+
         CollisionFlags l_CollisionFlags = m_CharacterController.Move(l_MovementDirection);
 
         if ((l_CollisionFlags & CollisionFlags.Below) != 0 && !m_GravityZone)
@@ -165,8 +168,7 @@ public class Player_Controller : MonoBehaviour
         if ((l_CollisionFlags & CollisionFlags.Above) != 0 && m_verticalSpeed > 0.0f && !m_GravityZone)
             m_verticalSpeed = 0;
 
-
-        if (m_CharacterController.velocity.magnitude > 0.01f && m_CharacterController.isGrounded)
+        if (m_CharacterController.velocity.magnitude > 0.001f && m_CharacterController.isGrounded)
         {
             // m_Animator.SetBool("Walking", true);
             HandleFootstepSound();
@@ -174,11 +176,9 @@ public class Player_Controller : MonoBehaviour
         //else
         //m_Animator.SetBool("Walking", false);
 
-
         if (m_EnterPortal)
         {
             Vector3 l_Offset = m_Portal.transform.position - transform.position;
-        
              
             if (Vector3.Dot(m_Portal.transform.forward, l_Offset.normalized) >0)
             {
@@ -187,8 +187,6 @@ public class Player_Controller : MonoBehaviour
             }
         }
     }
-
-
 
     private void DetectSurface()
     {
@@ -217,6 +215,9 @@ public class Player_Controller : MonoBehaviour
                 case "Rock":
                     SoundsManager.instance.PlayFootstepSound(transform, 0.4f, SoundsManager.SurfaceType.Rock);
                     break;
+                case "Glass":
+                    SoundsManager.instance.PlayFootstepSound(transform, 0.4f, SoundsManager.SurfaceType.Glass);
+                    break;
                 default:
                     SoundsManager.instance.PlayFootstepSound(transform, 0.4f, SoundsManager.SurfaceType.Default);
                     break;
@@ -239,7 +240,7 @@ public class Player_Controller : MonoBehaviour
         {
             m_EnterPortal = true;
             m_Portal = other.GetComponent<Portal>();
-            Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, true); 
+            Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, true);
             m_PreviousOffsetFromPortal = m_Portal.transform.position - transform.position;
         }
 
@@ -248,7 +249,6 @@ public class Player_Controller : MonoBehaviour
             m_GravityZone = true;
             m_ZeroGravity = other.GetComponent<ZeroGravity>();
         }
-
     }
 
     private void OnTriggerExit(Collider other)
@@ -259,10 +259,10 @@ public class Player_Controller : MonoBehaviour
             m_Portal = other.GetComponent<Portal>();
             Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, false);
         }
-        
+
         if (other.CompareTag("GravityZero"))
         {
-            m_ZeroGravity = other.GetComponent<ZeroGravity>(); 
+            m_ZeroGravity = other.GetComponent<ZeroGravity>();
             m_GravityZone = false;
         }
     }
@@ -299,9 +299,7 @@ public class Player_Controller : MonoBehaviour
             {
                 m_InitialBounceSpeed = Mathf.Max(Mathf.Abs(m_verticalSpeed), m_MinBounceForce);
                 m_HasBounced = true;
-            }
-
-            m_verticalSpeed = m_InitialBounceSpeed;
+            } 
         }
         else
         {

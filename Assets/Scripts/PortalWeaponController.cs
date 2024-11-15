@@ -24,6 +24,10 @@ public class PortalWeaponController : MonoBehaviour
     [SerializeField] private PortalBullet m_BulletPortalOrange;
     [SerializeField] private Transform m_ShootPoint;
 
+    [Header("Sounds")]
+    [SerializeField] private AudioClip m_BluePortalSound;
+    [SerializeField] private AudioClip m_OrangePortalSound;
+
     private Player_Controller m_PlayerController;
     public List<Transform> m_ValidPoints = new List<Transform>();
     public Transform m_AttractPoint;
@@ -133,6 +137,7 @@ public class PortalWeaponController : MonoBehaviour
                         m_HitCollisoned = l_hit;    
                         m_BulletPortalBlue.gameObject.SetActive(true);
                         m_BulletPortalBlue.Shoot(m_ShootPoint.position, l_Ray.direction);
+                        SoundsManager.instance.PlaySoundClip(m_BluePortalSound, transform, 0.05f);
                         m_CanShootBlue = false;
                     }
 
@@ -141,6 +146,7 @@ public class PortalWeaponController : MonoBehaviour
                         m_HitCollisoned = l_hit;
                         m_BulletPortalOrange.gameObject.SetActive(true);
                         m_BulletPortalOrange.Shoot(m_ShootPoint.position, l_Ray.direction);
+                        SoundsManager.instance.PlaySoundClip(m_OrangePortalSound, transform, 0.05f);
                         m_CanShootOrange = false;   
                     }
                 }
