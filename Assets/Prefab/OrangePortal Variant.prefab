@@ -28,10 +28,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: OrangePortal Variant
       objectReference: {fileID: 0}
-    - target: {fileID: 5410044178206360360, guid: 4e277ee4ab3aa3e4fa89e7edc8625347, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.037538078
-      objectReference: {fileID: 0}
     - target: {fileID: 5944072641866338572, guid: 4e277ee4ab3aa3e4fa89e7edc8625347, type: 3}
       propertyPath: m_LocalPosition.x
       value: 15.5

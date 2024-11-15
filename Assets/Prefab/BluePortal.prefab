@@ -166,8 +166,8 @@ Transform:
   m_GameObject: {fileID: 904738107123081711}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: -9.3132e-10, y: -0, z: -0.038131}
-  m_LocalScale: {x: 2, y: 0.7696052, z: 1.2}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalScale: {x: 2, y: 0.075, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5944072641866338572}
@@ -653,8 +653,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4044636623238771393}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 19.682049, y: 4.225565, z: 7.361497}
+  m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
+  m_LocalPosition: {x: 15.5, y: 1.5, z: 19.94}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -665,7 +665,7 @@ Transform:
   - {fileID: 2778654869983396112}
   - {fileID: 3849481634898140509}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
 --- !u!114 &1360376697965872961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -687,8 +687,6 @@ MonoBehaviour:
   m_PortalAnimation: 0
   m_StartSizeAnimation: {x: 0, y: 0, z: 0}
   m_WallPortaled: {fileID: 0}
-  m_Weapon: {fileID: 0}
-  m_CloneWeapon: {fileID: 0}
   m_LaserRenderer: {fileID: 158257971493664379}
   m_LaserEnabled: 0
   m_LayerMask:
