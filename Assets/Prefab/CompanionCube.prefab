@@ -2747,7 +2747,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 025261141b4481b4da2e93e4ca2b3408, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TeleportOffset: 3
+  m_Catched: 0
 --- !u!1 &1996072827028512
 GameObject:
   m_ObjectHideFlags: 0

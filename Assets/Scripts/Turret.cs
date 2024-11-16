@@ -1,18 +1,18 @@
 ﻿using System;
 using UnityEngine;
 
-public class Torret : MonoBehaviour
+public class Turret : TeleportableObjects
 {
+    [SerializeField] private float m_MaxAngleLaserAlive = 10.0f;
+    public static Action OnLaserReceived;
     public LineRenderer m_LaserRenderer;
     public LayerMask m_LayerMask;
     public float m_MaxDistance = 50.0f;
-    [SerializeField] private float m_MaxAngleLaserAlive = 10.0f;
-    private Portal m_Portal;
 
-    public static Action OnLaserReceived;
+    public override void Update()
+    { 
+        base.Update();
 
-    void Update()
-    {
         if (IsLaserAlive())
         {
             Ray l_Ray = new Ray(m_LaserRenderer.transform.position, m_LaserRenderer.transform.forward);

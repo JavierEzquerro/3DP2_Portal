@@ -17,7 +17,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject m_DeathUI;
     [SerializeField] private GameObject m_GameUI;
     [SerializeField] private CharacterController m_CharacterController;
-    [SerializeField] private Player_Controller m_PlayerController;
     [SerializeField] private TMP_Text m_TextCanvas;
     [SerializeField] private TMP_Text m_NewGameText;
     //[SerializeField] private FadeController m_FadeController;

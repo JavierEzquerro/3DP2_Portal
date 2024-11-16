@@ -15,6 +15,7 @@ TagManager:
   - Weapon
   - GravityZero
   - LaserReceiver
+  - Camera
   layers:
   - Default
   - TransparentFX

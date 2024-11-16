@@ -7,47 +7,47 @@ using static UnityEditor.PlayerSettings;
 
 public class PortalWeaponController : MonoBehaviour
 {
+    [Header("Portal")]
+    [SerializeField] private Camera m_Camera;
     [SerializeField] private GameObject m_BluePreviewPortal;
     [SerializeField] private GameObject m_OrangePreviewPortal;
-    [SerializeField] private Camera m_Camera;
     [SerializeField] private GameObject m_BluePortal;
     [SerializeField] private GameObject m_OrangePortal;
-    [SerializeField] private float m_DistanceRay;
-    [SerializeField] private float m_ThresholdPortal;
-    [SerializeField] private float m_ForceLaunch;
-    [SerializeField] private float m_DistanceStopLerpAttract;
-    [SerializeField] private GameObject m_CrossHairBlue;
-    [SerializeField] private GameObject m_CrossHairOrange;
-    [SerializeField] private float m_ScrollWheelIncrement;
     [SerializeField] private float m_AngleValidPortal;
-    [SerializeField] private PortalBullet m_BulletPortalBlue; 
+    [SerializeField] private float m_ScrollWheelIncrement;
+    public List<Transform> m_ValidPoints = new List<Transform>();
+    private Player_Controller m_PlayerController;
+    private RaycastHit m_HitCollisoned;
+    private Vector3 m_StartScale;
+    private float m_Angle;
+    private float m_CurrentPortalSize;
+    private float m_PreviewAnimation;
+
+    [Header("Weapon")]
+    [SerializeField] private PortalBullet m_BulletPortalBlue;
     [SerializeField] private PortalBullet m_BulletPortalOrange;
     [SerializeField] private Transform m_ShootPoint;
+    [SerializeField] private float m_DistanceRay;
+    [SerializeField] private float m_ThresholdPortal;
+    [SerializeField] private GameObject m_CrossHairBlue;
+    [SerializeField] private GameObject m_CrossHairOrange;
+    [SerializeField] private float m_ForceLaunch;
+    public GameObject m_ObjectAttract;
+    private Transform m_AttachedPreviousParent;
+    public Transform m_AttractPoint;
+    private Rigidbody m_RbObjectAttract;
+    private BoxCollider m_ObjectCollider;
+    public float m_AttractSpeed;
+    private float m_AttractingPorgress;
+    public bool m_TrapedObject;
+    private bool m_AttractingObjects;
+    private bool m_CanShootBlue;
+    private bool m_CanShootOrange;
+    private int m_ReSize;
 
     [Header("Sounds")]
     [SerializeField] private AudioClip m_BluePortalSound;
     [SerializeField] private AudioClip m_OrangePortalSound;
-
-    private Player_Controller m_PlayerController;
-    public List<Transform> m_ValidPoints = new List<Transform>();
-    public Transform m_AttractPoint;
-    private bool m_AttractingObjects;
-    private bool m_TrapedObject;
-    private GameObject m_ObjectAttract;
-    private Rigidbody m_RbObjectAttract;
-    private BoxCollider m_ObjectCollider;
-    public float m_AttractSpeed;
-    private int m_ReSize;
-    private Vector3 m_StartScale;
-    private float m_CurrentPortalSize; 
-    private float m_AttractingPorgress;
-    private float m_Angle;
-    private Transform m_AttachedPreviousParent;
-    private float m_PreviewAnimation;
-    private bool m_CanShootBlue;
-    private bool m_CanShootOrange;
-    private RaycastHit m_HitCollisoned;
-
 
     private void Start()
     {
@@ -65,7 +65,7 @@ public class PortalWeaponController : MonoBehaviour
         m_Angle = Mathf.Cos(m_AngleValidPortal * Mathf.Deg2Rad);
         m_PlayerController = GetComponent<Player_Controller>();
 
-       //BULLET PORTAL
+        //BULLET PORTAL
         m_BulletPortalBlue.gameObject.SetActive(false);
         m_BulletPortalBlue.transform.position = m_ShootPoint.position;
 
@@ -73,7 +73,7 @@ public class PortalWeaponController : MonoBehaviour
         m_BulletPortalOrange.transform.position = m_ShootPoint.position;
 
         m_CanShootBlue = true;
-        m_CanShootOrange = true; 
+        m_CanShootOrange = true;
     }
 
     private void Update()
@@ -101,7 +101,7 @@ public class PortalWeaponController : MonoBehaviour
                         if (l_ScrollWheel > 0)
                         {
                             m_ReSize += 1;
-                            m_PreviewAnimation = 0; 
+                            m_PreviewAnimation = 0;
                         }
                         else if (l_ScrollWheel < 0)
                         {
@@ -109,20 +109,20 @@ public class PortalWeaponController : MonoBehaviour
                             m_PreviewAnimation = 0;
                         }
 
-                        PreviewPortalAnimation(); 
+                        PreviewPortalAnimation();
 
                         m_ReSize = Mathf.Clamp(m_ReSize, -1, 1);
 
                         if (Input.GetMouseButton(0))
                         {
                             m_BluePreviewPortal.SetActive(true);
-                            m_CanShootBlue = true;  
-                            m_CanShootOrange = false;   
+                            m_CanShootBlue = true;
+                            m_CanShootOrange = false;
                         }
                         else if (Input.GetMouseButton(1))
                         {
                             m_OrangePreviewPortal.SetActive(true);
-                            m_CanShootOrange = true; 
+                            m_CanShootOrange = true;
                             m_CanShootBlue = false;
                         }
                     }
@@ -134,7 +134,7 @@ public class PortalWeaponController : MonoBehaviour
 
                     if (Input.GetMouseButtonUp(0) && m_CanShootBlue)
                     {
-                        m_HitCollisoned = l_hit;    
+                        m_HitCollisoned = l_hit;
                         m_BulletPortalBlue.gameObject.SetActive(true);
                         m_BulletPortalBlue.Shoot(m_ShootPoint.position, l_Ray.direction);
                         SoundsManager.instance.PlaySoundClip(m_BluePortalSound, transform, 0.05f);
@@ -147,7 +147,7 @@ public class PortalWeaponController : MonoBehaviour
                         m_BulletPortalOrange.gameObject.SetActive(true);
                         m_BulletPortalOrange.Shoot(m_ShootPoint.position, l_Ray.direction);
                         SoundsManager.instance.PlaySoundClip(m_OrangePortalSound, transform, 0.05f);
-                        m_CanShootOrange = false;   
+                        m_CanShootOrange = false;
                     }
                 }
                 else
@@ -157,7 +157,6 @@ public class PortalWeaponController : MonoBehaviour
                 }
 
             }
-
 
             //ATTRACT OBJECTS
             if (l_hit.collider.CompareTag("CompanionCube") || l_hit.collider.CompareTag("Turret"))
@@ -193,6 +192,8 @@ public class PortalWeaponController : MonoBehaviour
         {
             m_RbObjectAttract.isKinematic = false;
             m_ObjectAttract.transform.SetParent(m_AttachedPreviousParent);
+            TeleportableObjects l_TeleportableObjects = m_ObjectAttract.GetComponent<TeleportableObjects>();
+            l_TeleportableObjects.m_Catched = false;
             m_TrapedObject = false;
             m_RbObjectAttract.useGravity = true;
             m_ObjectCollider.enabled = true;
@@ -202,6 +203,8 @@ public class PortalWeaponController : MonoBehaviour
         {
             m_RbObjectAttract.isKinematic = false;
             m_ObjectAttract.transform.SetParent(m_AttachedPreviousParent);
+            TeleportableObjects l_TeleportableObjects = m_ObjectAttract.GetComponent<TeleportableObjects>();
+            l_TeleportableObjects.m_Catched = false;
             m_TrapedObject = false;
             m_RbObjectAttract.useGravity = true;
             m_ObjectCollider.enabled = true;
@@ -212,18 +215,20 @@ public class PortalWeaponController : MonoBehaviour
     {
         if (m_AttractingObjects)
         {
-            m_AttractingPorgress += m_AttractSpeed * Time.deltaTime; 
+            m_AttractingPorgress += m_AttractSpeed * Time.deltaTime;
 
             m_ObjectAttract.transform.position = Vector3.Lerp(m_ObjectAttract.transform.position, m_AttractPoint.transform.position, m_AttractingPorgress);
             m_ObjectAttract.transform.forward = Vector3.Lerp(m_ObjectAttract.transform.forward, transform.forward, m_AttractingPorgress);
 
-            if(m_AttractingPorgress >= 1)
+            if (m_AttractingPorgress >= 1)
             {
                 m_ObjectAttract.transform.SetParent(m_AttractPoint.transform);
+                TeleportableObjects l_TeleportableObjects = m_ObjectAttract.GetComponent<TeleportableObjects>();
+                l_TeleportableObjects.m_Catched = true;
                 m_ObjectAttract.transform.localPosition = Vector3.zero;
                 m_AttractingObjects = false;
                 m_TrapedObject = true;
-                m_AttractingPorgress = 0;   
+                m_AttractingPorgress = 0;
             }
         }
 
@@ -238,24 +243,12 @@ public class PortalWeaponController : MonoBehaviour
         m_ObjectAttract = l_hit.collider.gameObject;
         m_RbObjectAttract = m_ObjectAttract.GetComponent<Rigidbody>();
         m_ObjectCollider = m_RbObjectAttract.GetComponent<BoxCollider>();
-        m_AttachedPreviousParent = m_RbObjectAttract.transform.parent;  
-
-
-        bool l_IsTurret = false;
-
-        if (l_hit.collider.CompareTag("Turret"))
-            l_IsTurret = true;
-
-        if (l_IsTurret)
-        {
-            //m_ObjectAttract.transform.forward = Vector3.Lerp(m_ObjectAttract.transform.forward, transform.forward, m_AttractSpeed * Time.deltaTime); 
-        }
+        m_AttachedPreviousParent = m_RbObjectAttract.transform.parent;
 
         m_AttractingObjects = true;
         m_RbObjectAttract.useGravity = false;
         m_RbObjectAttract.velocity = Vector3.zero;
         m_RbObjectAttract.angularVelocity = Vector3.zero;
-        //m_ObjectCollider.enabled = false;
     }
 
     private void ActivePortalBlue(RaycastHit l_hit)
@@ -275,7 +268,7 @@ public class PortalWeaponController : MonoBehaviour
     {
         m_OrangePortal.SetActive(true);
         Portal l_portal = m_OrangePortal.GetComponent<Portal>();
-        l_portal.m_WallPortaled = l_hit.collider.GetComponent<Collider>(); 
+        l_portal.m_WallPortaled = l_hit.collider.GetComponent<Collider>();
         l_portal.transform.localScale = l_portal.m_StartSizeAnimation;
         l_portal.m_PortalSize = m_CurrentPortalSize;
         l_portal.m_PortalAnimation = true;
@@ -294,7 +287,7 @@ public class PortalWeaponController : MonoBehaviour
         {
             Vector3 l_Diretion = m_ValidPoints[i].transform.position - m_Camera.transform.position;
 
-            if (Physics.Raycast(l_CameraPosition, l_Diretion, out l_hit, m_DistanceRay))
+            if (Physics.Raycast(l_CameraPosition, l_Diretion, out l_hit, m_DistanceRay, ~0, QueryTriggerInteraction.Ignore))
             {
                 float l_Dotangle = Vector3.Dot(l_hit.normal, m_ValidPoints[i].forward);
 
@@ -313,9 +306,8 @@ public class PortalWeaponController : MonoBehaviour
 
     public void PreviewPortalAnimation()
     {
-
         float l_speedAnimation = 1;
-        m_PreviewAnimation += Time.deltaTime * l_speedAnimation; 
+        m_PreviewAnimation += Time.deltaTime * l_speedAnimation;
 
         if (m_ReSize == 1)
         {
@@ -336,7 +328,7 @@ public class PortalWeaponController : MonoBehaviour
             m_CurrentPortalSize = 0.5f;
         }
 
-        if(m_PreviewAnimation >= 1)
+        if (m_PreviewAnimation >= 1)
             m_PreviewAnimation = 0;
     }
 

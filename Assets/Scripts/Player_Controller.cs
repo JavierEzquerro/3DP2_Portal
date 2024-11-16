@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Player_Controller : MonoBehaviour
+public class Player_Controller : MonoBehaviour, ITeleport
 {
     private CharacterController m_CharacterController;
+    private PortalWeaponController m_PortalWeaponController;
     // private Animator m_Animator;
     public Transform m_PitchController;
     private float m_Yaw;
@@ -62,12 +63,14 @@ public class Player_Controller : MonoBehaviour
     private void Awake()
     {
         m_CharacterController = GetComponent<CharacterController>();
+        m_PortalWeaponController = GetComponent<PortalWeaponController>();
+        GameManager.instance.SetPlayer(this);
     }
 
     void Start()
     {
         //m_Animator = GetComponent<Animator>();
-        GameManager.instance.SetPlayer(this);
+        
         m_Yaw = transform.eulerAngles.y;
         m_Pitch = m_PitchController.localRotation.eulerAngles.x;
         Cursor.lockState = CursorLockMode.Locked;
@@ -139,7 +142,6 @@ public class Player_Controller : MonoBehaviour
 
         if (m_GravityZone)
         {
-            Debug.Log("ZERO Gravity");
             m_verticalSpeed = 0;
             l_MovementDirection.y = 0;
             m_Speed = m_StartSpeed / 4;
@@ -172,20 +174,17 @@ public class Player_Controller : MonoBehaviour
         //m_Animator.SetBool("Walking", false);
 
         float l_DotMovementForward = Vector3.Dot(transform.forward, l_MovementDirection.normalized);
-        Debug.Log(l_DotMovementForward);
 
         if (m_EnterPortal)
         {
             Vector3 l_Offset = m_Portal.transform.position - transform.position;
-             
+
             if (Vector3.Dot(m_Portal.transform.forward, l_Offset.normalized) > -0.002)
             {
-                Teleport(m_Portal, l_DotMovementForward);
+                Teleport(m_Portal);
                 m_EnterPortal = false;
             }
-        }
-
-      
+        } 
     }
 
     private void DetectSurface()
@@ -267,7 +266,7 @@ public class Player_Controller : MonoBehaviour
         }
     }
 
-    private void Teleport(Portal l_portal, float l_DotMovementForward)
+    public void Teleport(Portal l_portal)
     {
         Vector3 l_Position = transform.position; //Obtener Posicion en mundo
         Vector3 l_LocalPosition = l_portal.m_OtherPortalTransform.InverseTransformPoint(l_Position); //Pasar de Posicion mundo a local
@@ -279,14 +278,19 @@ public class Player_Controller : MonoBehaviour
 
         Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, false);
 
-        Debug.Log("Teleport");
-        SoundsManager.instance.PlaySoundClip(m_EnterPortalSound, transform, 0.2f);
+        SoundsManager.instance.PlaySoundClip(m_EnterPortalSound, transform, 0.1f);
         m_CharacterController.enabled = false;
         transform.position = l_WorldPosition;
         transform.forward = l_WorldForward;
         m_Yaw = transform.eulerAngles.y; 
         m_CharacterController.enabled = true;
-        SoundsManager.instance.PlaySoundClip(m_ExitPortalSound, transform, 0.2f);
+        SoundsManager.instance.PlaySoundClip(m_ExitPortalSound, transform, 0.1f);
+
+        if (m_PortalWeaponController.m_TrapedObject)
+        {
+            m_PortalWeaponController.m_ObjectAttract.transform.localScale =
+                m_PortalWeaponController.m_ObjectAttract.GetComponent<TeleportableObjects>().m_StartSize * m_Portal.m_PortalSize;  
+        }
     }
 
     private void OnControllerColliderHit(ControllerColliderHit collision)
