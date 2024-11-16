@@ -279,12 +279,14 @@ public class Player_Controller : MonoBehaviour
 
         Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, false);
 
-        Debug.Log("Teleport"); 
+        Debug.Log("Teleport");
+        SoundsManager.instance.PlaySoundClip(m_EnterPortalSound, transform, 0.2f);
         m_CharacterController.enabled = false;
         transform.position = l_WorldPosition;
         transform.forward = l_WorldForward;
         m_Yaw = transform.eulerAngles.y;
         m_CharacterController.enabled = true;
+        SoundsManager.instance.PlaySoundClip(m_ExitPortalSound, transform, 0.2f);
     }
 
     private void OnControllerColliderHit(ControllerColliderHit collision)

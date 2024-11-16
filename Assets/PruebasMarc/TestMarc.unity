@@ -673,7 +673,7 @@ PrefabInstance:
     - target: {fileID: 4810978796021309454, guid: b8eba3a3a48981543bb6a4d743da716a, type: 3}
       propertyPath: m_BulletPortalBlue
       value: 
-      objectReference: {fileID: 581140015}
+      objectReference: {fileID: 581140018}
     - target: {fileID: 4810978796021309454, guid: b8eba3a3a48981543bb6a4d743da716a, type: 3}
       propertyPath: m_BluePreviewPortal
       value: 
@@ -681,7 +681,7 @@ PrefabInstance:
     - target: {fileID: 4810978796021309454, guid: b8eba3a3a48981543bb6a4d743da716a, type: 3}
       propertyPath: m_BulletPortalOrange
       value: 
-      objectReference: {fileID: 1221869971}
+      objectReference: {fileID: 1221869974}
     - target: {fileID: 4810978796021309454, guid: b8eba3a3a48981543bb6a4d743da716a, type: 3}
       propertyPath: m_OrangePreviewPortal
       value: 
@@ -1064,6 +1064,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_MaxDistance: 57.1
+  m_MaxAngleLaserAlive: 10
 --- !u!4 &482967004 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400008, guid: e974cdd27b308e14fadbc5fef531fbbc, type: 3}
@@ -1147,11 +1148,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 27f1c7c6d289cfb45804804300b5dda6, type: 3}
---- !u!1 &581140015 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7068800584004255839, guid: 27f1c7c6d289cfb45804804300b5dda6, type: 3}
+--- !u!114 &581140018 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7372173873321871420, guid: 27f1c7c6d289cfb45804804300b5dda6, type: 3}
   m_PrefabInstance: {fileID: 581140014}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41d0bc624c321b748956883b065649a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &581890599
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2198,11 +2205,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 71b6cfb69e1b9274dbbd4573384ccc9d, type: 3}
---- !u!1 &1221869971 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4505810170223973630, guid: 71b6cfb69e1b9274dbbd4573384ccc9d, type: 3}
+--- !u!114 &1221869974 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4238326795334261917, guid: 71b6cfb69e1b9274dbbd4573384ccc9d, type: 3}
   m_PrefabInstance: {fileID: 1221869970}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41d0bc624c321b748956883b065649a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1235262217
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2962,6 +2975,9 @@ MonoBehaviour:
   m_CompanionSpawnerAnimatior: {fileID: 1606821084}
   m_ButtonText: {fileID: 766921995}
   m_CubeAlreadyExists: 0
+  m_OnButtonClicked:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &1606821081
 Transform:
   m_ObjectHideFlags: 0
@@ -3727,6 +3743,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_DoorAnimator: {fileID: 919132147533555320}
   m_DoorType: 1
+  m_OpenDoorSound: {fileID: 0}
+  m_CloseDoorSound: {fileID: 0}
 --- !u!1 &919132148396391755
 GameObject:
   m_ObjectHideFlags: 0

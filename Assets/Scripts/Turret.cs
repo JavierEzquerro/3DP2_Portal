@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Torret : MonoBehaviour
 {
@@ -7,6 +8,8 @@ public class Torret : MonoBehaviour
     public float m_MaxDistance = 50.0f;
     [SerializeField] private float m_MaxAngleLaserAlive = 10.0f;
     private Portal m_Portal;
+
+    public static Action OnLaserReceived;
 
     void Update()
     {
@@ -40,7 +43,11 @@ public class Torret : MonoBehaviour
                 {
                     m_Portal = l_HitInfo.collider.GetComponent<Portal>();
                     m_LaserRenderer.SetPosition(1, new Vector3(0, 0, l_HitInfo.distance + Vector3.Distance(l_HitInfo.point, m_Portal.transform.position) + 0.5f));
-                    m_Portal.RayReflection(l_Ray, l_HitInfo); 
+                    m_Portal.RayReflection(l_Ray, l_HitInfo);
+                }
+                else if (l_HitInfo.collider.CompareTag("LaserReceiver"))
+                {
+                    OnLaserReceived?.Invoke();
                 }
             }
         }
