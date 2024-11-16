@@ -133,14 +133,9 @@ public class Player_Controller : MonoBehaviour
             m_JumpDelayTimer = m_JumpDelay;
         }
 
-        float l_speedMultiplier = 1.0f;
+   
 
-        /*
-        if (Input.GetKey(m_LeftShiftCode))
-            l_speedMultiplier = m_speedMultiplier;
-         */
-
-        Vector3 l_MovementDirection = m_MovementDirection * m_Speed * l_speedMultiplier * Time.deltaTime;
+        Vector3 l_MovementDirection = m_MovementDirection * m_Speed * Time.deltaTime;
 
         if (m_GravityZone)
         {
@@ -156,13 +151,13 @@ public class Player_Controller : MonoBehaviour
             m_verticalSpeed += Physics.gravity.y * Time.deltaTime;
             l_MovementDirection.y = m_verticalSpeed * Time.deltaTime;
         }
-
+        
+        
         CollisionFlags l_CollisionFlags = m_CharacterController.Move(l_MovementDirection);
 
         if ((l_CollisionFlags & CollisionFlags.Below) != 0 && !m_GravityZone)
         {
             m_verticalSpeed = 0;
-            l_speedMultiplier = 1;
         }
 
         if ((l_CollisionFlags & CollisionFlags.Above) != 0 && m_verticalSpeed > 0.0f && !m_GravityZone)
@@ -176,16 +171,21 @@ public class Player_Controller : MonoBehaviour
         //else
         //m_Animator.SetBool("Walking", false);
 
+        float l_DotMovementForward = Vector3.Dot(transform.forward, l_MovementDirection.normalized);
+        Debug.Log(l_DotMovementForward);
+
         if (m_EnterPortal)
         {
             Vector3 l_Offset = m_Portal.transform.position - transform.position;
              
-            if (Vector3.Dot(m_Portal.transform.forward, l_Offset.normalized) >0)
+            if (Vector3.Dot(m_Portal.transform.forward, l_Offset.normalized) > -0.002)
             {
-                Teleport(m_Portal);
+                Teleport(m_Portal, l_DotMovementForward);
                 m_EnterPortal = false;
             }
         }
+
+      
     }
 
     private void DetectSurface()
@@ -267,13 +267,13 @@ public class Player_Controller : MonoBehaviour
         }
     }
 
-    private void Teleport(Portal l_portal)
+    private void Teleport(Portal l_portal, float l_DotMovementForward)
     {
-        Vector3 l_Position = transform.position + m_MovementDirection * m_TeleportOffset; //Obtener Posicion en mundo
+        Vector3 l_Position = transform.position; //Obtener Posicion en mundo
         Vector3 l_LocalPosition = l_portal.m_OtherPortalTransform.InverseTransformPoint(l_Position); //Pasar de Posicion mundo a local
         Vector3 l_WorldPosition = l_portal.m_MirrorPortal.transform.TransformPoint(l_LocalPosition); //Convertir la local al otro portal. 
 
-        Vector3 l_Forward = m_MovementDirection; 
+        Vector3 l_Forward = transform.forward; 
         Vector3 l_LocalForward = l_portal.m_OtherPortalTransform.InverseTransformDirection(l_Forward);
         Vector3 l_WorldForward = l_portal.m_MirrorPortal.transform.TransformDirection(l_LocalForward);
 
@@ -284,7 +284,7 @@ public class Player_Controller : MonoBehaviour
         m_CharacterController.enabled = false;
         transform.position = l_WorldPosition;
         transform.forward = l_WorldForward;
-        m_Yaw = transform.eulerAngles.y;
+        m_Yaw = transform.eulerAngles.y; 
         m_CharacterController.enabled = true;
         SoundsManager.instance.PlaySoundClip(m_ExitPortalSound, transform, 0.2f);
     }
