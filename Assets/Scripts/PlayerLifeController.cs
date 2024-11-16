@@ -24,12 +24,12 @@ public class PlayerLifeController : MonoBehaviour, IRestartGame
 
     private void OnEnable()
     {
-        Torret.OnPlayerDamagedByLaser += ApplyLaserDamage;
+        Turret.OnPlayerDamagedByLaser += ApplyLaserDamage;
     }
 
     private void OnDisable()
     {
-        Torret.OnPlayerDamagedByLaser -= ApplyLaserDamage;
+        Turret.OnPlayerDamagedByLaser -= ApplyLaserDamage;
     }
 
     private void Start()

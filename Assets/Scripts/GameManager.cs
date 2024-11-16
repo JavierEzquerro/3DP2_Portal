@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
         m_RestartGame.Add(l_Restart);
     }
 
-    public void AddTurretToRestart(Torret l_Turret)
+    public void AddTurretToRestart(Turret l_Turret)
     {
         m_TurretsToRestart.Add(l_Turret);
     }
@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour
                 l_Controller.RestartGame();
             }
 
-            foreach (Torret l_Turret in m_TurretsToRestart)
+            foreach (Turret l_Turret in m_TurretsToRestart)
             {
                 l_Turret.RestartGame();
             }

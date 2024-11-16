@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class TUrret : TeleportableObjects, IRestartGame
+public class Turret : TeleportableObjects, IRestartGame
 {
     [SerializeField] private float m_MaxAngleLaserAlive = 10.0f;
 
@@ -27,10 +27,10 @@ public class TUrret : TeleportableObjects, IRestartGame
         m_StartRotation = transform.rotation;
     }
 
-    public override Update()
+    public override void Update()
     {
         base.Update();
-         if (IsLaserAlive())
+        if (IsLaserAlive())
         {
             Ray l_Ray = new Ray(m_LaserRenderer.transform.position, m_LaserRenderer.transform.forward);
 
@@ -76,7 +76,6 @@ public class TUrret : TeleportableObjects, IRestartGame
         }
         else
             m_LaserRenderer.gameObject.SetActive(false);
-        }
     }
 
     private bool IsLaserAlive()
