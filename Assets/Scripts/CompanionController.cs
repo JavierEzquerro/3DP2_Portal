@@ -8,10 +8,10 @@ public class CompanionController : MonoBehaviour
     [SerializeField] private float m_TeleportOffset;
     private Vector3 m_MovementDirection;
     private Rigidbody m_Rigidbody;
-    private Vector3 m_StartSize; 
-
+    private Vector3 m_StartSize;
+    private bool m_EnterPortal; 
     public static Action OnCubeDestroyed;
-
+    private Portal m_Portal; 
     private void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
@@ -27,6 +27,14 @@ public class CompanionController : MonoBehaviour
         else
         {
             m_MovementDirection = Vector3.zero;
+        }
+    }
+
+    private void Update()
+    {
+        if (m_EnterPortal)
+        {
+            Teleport(m_Portal);
         }
     }
 
@@ -52,8 +60,7 @@ public class CompanionController : MonoBehaviour
     {
         if (other.CompareTag("Portal"))
         {
-            Portal l_portal = other.GetComponent<Portal>();
-            Teleport(l_portal);
+            m_Portal = other.GetComponent<Portal>();
         }
     }
 
