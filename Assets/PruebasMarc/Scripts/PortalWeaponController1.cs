@@ -45,14 +45,12 @@ public class PortalWeaponController1 : MonoBehaviour
             if (Physics.Raycast(m_Camera.transform.position, l_Direction.normalized, out RaycastHit l_ValidPointHit))
             {
                 float distance = Vector3.Distance(l_ValidPointHit.point, l_ValidPoint.position);
-                Debug.Log(distance);
                 if (distance >= 0.1f)
                 {
                     return false;
                 }
 
                 float angle = Vector3.Angle(l_Hit.normal, l_ValidPoint.forward);
-                Debug.Log(angle);
                 if (angle >= 2f)
                 {
                     return false;

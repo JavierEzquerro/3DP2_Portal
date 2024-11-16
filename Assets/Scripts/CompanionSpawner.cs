@@ -29,8 +29,8 @@ public class CompanionSpawner : MonoBehaviour
     {
         if (m_PlayerInTrigger && Input.GetKeyDown(KeyCode.E) && m_CubeAlreadyExists == false)
             StartCoroutine(Spawn());
-        else if (m_PlayerInTrigger && Input.GetKeyDown(KeyCode.E) && m_CubeAlreadyExists == true)
-            m_OnButtonClicked?.Invoke();
+        /*else if (m_PlayerInTrigger && Input.GetKeyDown(KeyCode.E) && m_CubeAlreadyExists == true)
+            m_OnButtonClicked?.Invoke();*/
     }
 
     private IEnumerator ShowTextCoroutine()

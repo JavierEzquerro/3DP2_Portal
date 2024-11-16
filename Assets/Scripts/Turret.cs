@@ -1,15 +1,29 @@
 ﻿using System;
 using UnityEngine;
 
-public class Torret : MonoBehaviour
+public class Torret : MonoBehaviour, IRestartGame
 {
+    [SerializeField] private float m_MaxAngleLaserAlive = 10.0f;
+    private Portal m_Portal;
+    private Vector3 m_StartPosition;
+    private Quaternion m_StartRotation;
+
     public LineRenderer m_LaserRenderer;
     public LayerMask m_LayerMask;
     public float m_MaxDistance = 50.0f;
-    [SerializeField] private float m_MaxAngleLaserAlive = 10.0f;
-    private Portal m_Portal;
+
+    [Header("Sounds")]
+    [SerializeField] private AudioClip m_TurretDeathSound;
 
     public static Action OnLaserReceived;
+    public static Action<float> OnPlayerDamagedByLaser;
+
+    private void Start()
+    {
+        GameManager.instance.AddTurretToRestart(this);
+        m_StartPosition = transform.position;
+        m_StartRotation = transform.rotation;
+    }
 
     void Update()
     {
@@ -35,9 +49,8 @@ public class Torret : MonoBehaviour
                         m_Portal.m_LaserEnabled = false;
                         Debug.Log("No laser");
                     }
-
+                    SoundsManager.instance.PlaySoundClip(m_TurretDeathSound, transform, 0.2f);
                     Destroy(l_HitInfo.collider.gameObject);
-
                 }
                 else if (l_HitInfo.collider.CompareTag("Portal"))
                 {
@@ -49,6 +62,13 @@ public class Torret : MonoBehaviour
                 {
                     OnLaserReceived?.Invoke();
                 }
+                else if (l_HitInfo.collider.TryGetComponent(out PlayerLifeController l_PlayerLifeController))
+                {
+                    float l_LaserDuration = l_PlayerLifeController.m_TimeToKillPlayer;
+                    float l_MaxHealthPlayerHealth = l_PlayerLifeController.m_MaxPlayerHealth;
+                    float l_DamagePerSecond = l_MaxHealthPlayerHealth / l_LaserDuration;
+                    OnPlayerDamagedByLaser?.Invoke(Time.deltaTime * l_DamagePerSecond);
+                }
             }
         }
         else
@@ -58,5 +78,11 @@ public class Torret : MonoBehaviour
     private bool IsLaserAlive()
     {
         return Vector3.Dot(transform.up, Vector3.up) > Mathf.Cos(m_MaxAngleLaserAlive * Mathf.Deg2Rad);
+    }
+
+    public void RestartGame()
+    {
+        transform.position = m_StartPosition;
+        transform.rotation = m_StartRotation;
     }
 }

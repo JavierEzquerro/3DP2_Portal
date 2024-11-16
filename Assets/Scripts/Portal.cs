@@ -94,6 +94,10 @@ public class Portal : MonoBehaviour
                 //Animacion
                 Destroy(l_HitInfo.collider.gameObject);
             }
+            else if (l_HitInfo.collider.TryGetComponent(out PlayerLifeController l_PlayerLifeController))
+            {
+                l_PlayerLifeController.Death();
+            }
         }
         else
             m_LaserRenderer.gameObject.SetActive(false);

@@ -36,6 +36,11 @@ public class CompanionController : MonoBehaviour
         {
             Teleport(m_Portal);
         }
+
+        if (GameManager.instance.m_Restart)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Teleport(Portal l_portal)
@@ -52,7 +57,6 @@ public class CompanionController : MonoBehaviour
         transform.position = l_WorldPosition;
         transform.forward = l_WorldForward;
         m_Rigidbody.velocity = l_WorldForward * m_Rigidbody.velocity.magnitude;
-        Debug.Log(l_portal.m_MirrorPortal.m_PortalSize); 
         transform.localScale = transform.localScale * l_portal.m_MirrorPortal.m_PortalSize; 
     }
 
