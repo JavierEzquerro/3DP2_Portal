@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Player_Controller : MonoBehaviour, ITeleport
+public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
 {
     private CharacterController m_CharacterController;
     private PortalWeaponController m_PortalWeaponController;
@@ -15,7 +15,11 @@ public class Player_Controller : MonoBehaviour, ITeleport
     private float m_FootstepTimer;
     private float m_JumpDelay = 0.1f;
     private float m_JumpDelayTimer = 0f;
+
     public bool m_CanMove { get; set; } = true;
+
+    private Quaternion m_StartRotation;
+    private Vector3 m_StartPosition;
 
     public Camera m_Camera;
 
@@ -37,9 +41,10 @@ public class Player_Controller : MonoBehaviour, ITeleport
     private KeyCode m_LeftShiftCode = KeyCode.LeftShift;
     private KeyCode m_JumpKeyCode = KeyCode.Space;
 
-    [Header("Audio")]
+    [Header("Sounds")]
     [SerializeField] private AudioClip m_EnterPortalSound;
     [SerializeField] private AudioClip m_ExitPortalSound;
+    [SerializeField] private AudioClip m_LandSound;
     private string m_CurrentSurfaceTag;
 
     [Header("Surfaces")]
@@ -57,8 +62,10 @@ public class Player_Controller : MonoBehaviour, ITeleport
     [Header("ZeroGravity")]
     private ZeroGravity m_ZeroGravity;
     private bool m_GravityZone;
-    float m_StartSpeed;
+    private float m_StartSpeed;
     private Vector3 m_PreviousOffsetFromPortal;
+
+    public static Action<bool> OnCheckpointEntered;
 
     private void Awake()
     {
@@ -70,7 +77,11 @@ public class Player_Controller : MonoBehaviour, ITeleport
     void Start()
     {
         //m_Animator = GetComponent<Animator>();
-        
+        GameManager.instance.SetPlayer(this);
+        GameManager.instance.AddRestartGame(this);
+        m_StartPosition = transform.position;
+        m_StartRotation = transform.rotation;
+
         m_Yaw = transform.eulerAngles.y;
         m_Pitch = m_PitchController.localRotation.eulerAngles.x;
         Cursor.lockState = CursorLockMode.Locked;
@@ -132,11 +143,8 @@ public class Player_Controller : MonoBehaviour, ITeleport
         if (m_CharacterController.isGrounded && Input.GetKey(m_JumpKeyCode) && m_JumpDelayTimer <= 0f)
         {
             m_verticalSpeed = m_JumpSpeed;
-            //SoundsManager.instance.PlaySoundClip(m_MetalJumpSound, transform, 0.2f);
             m_JumpDelayTimer = m_JumpDelay;
         }
-
-   
 
         Vector3 l_MovementDirection = m_MovementDirection * m_Speed * Time.deltaTime;
 
@@ -153,8 +161,8 @@ public class Player_Controller : MonoBehaviour, ITeleport
             m_verticalSpeed += Physics.gravity.y * Time.deltaTime;
             l_MovementDirection.y = m_verticalSpeed * Time.deltaTime;
         }
-        
-        
+
+
         CollisionFlags l_CollisionFlags = m_CharacterController.Move(l_MovementDirection);
 
         if ((l_CollisionFlags & CollisionFlags.Below) != 0 && !m_GravityZone)
@@ -184,7 +192,7 @@ public class Player_Controller : MonoBehaviour, ITeleport
                 Teleport(m_Portal);
                 m_EnterPortal = false;
             }
-        } 
+        }
     }
 
     private void DetectSurface()
@@ -226,12 +234,23 @@ public class Player_Controller : MonoBehaviour, ITeleport
         }
     }
 
-    public void SetSpeed(float l_speed)
+    private void SetStartPosition(Vector3 l_position)
     {
-        m_Speed = l_speed;
+        m_StartPosition = l_position;
+    }
+
+    public void SetSpeed()
+    {
+        m_Speed = m_StartSpeed;
     }
 
     public float GetSpeed() { return m_Speed; }
+
+    public void RestartGame()
+    {
+        transform.position = m_StartPosition;
+        transform.rotation = m_StartRotation;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -247,6 +266,19 @@ public class Player_Controller : MonoBehaviour, ITeleport
         {
             m_GravityZone = true;
             m_ZeroGravity = other.GetComponent<ZeroGravity>();
+        }
+
+        if (other.CompareTag("Checkpoint"))
+        {
+            CheckpointController l_CheckpointController;
+            l_CheckpointController = other.GetComponent<CheckpointController>();
+
+            if (l_CheckpointController.IsChecked() == false)
+            {
+                OnCheckpointEntered?.Invoke(true);
+                SetStartPosition(l_CheckpointController.CheckPointPosition());
+                l_CheckpointController.SetChecked(true);
+            }
         }
     }
 
@@ -272,7 +304,7 @@ public class Player_Controller : MonoBehaviour, ITeleport
         Vector3 l_LocalPosition = l_portal.m_OtherPortalTransform.InverseTransformPoint(l_Position); //Pasar de Posicion mundo a local
         Vector3 l_WorldPosition = l_portal.m_MirrorPortal.transform.TransformPoint(l_LocalPosition); //Convertir la local al otro portal. 
 
-        Vector3 l_Forward = transform.forward; 
+        Vector3 l_Forward = transform.forward;
         Vector3 l_LocalForward = l_portal.m_OtherPortalTransform.InverseTransformDirection(l_Forward);
         Vector3 l_WorldForward = l_portal.m_MirrorPortal.transform.TransformDirection(l_LocalForward);
 
@@ -282,7 +314,7 @@ public class Player_Controller : MonoBehaviour, ITeleport
         m_CharacterController.enabled = false;
         transform.position = l_WorldPosition;
         transform.forward = l_WorldForward;
-        m_Yaw = transform.eulerAngles.y; 
+        m_Yaw = transform.eulerAngles.y;
         m_CharacterController.enabled = true;
         SoundsManager.instance.PlaySoundClip(m_ExitPortalSound, transform, 0.1f);
 
@@ -305,7 +337,7 @@ public class Player_Controller : MonoBehaviour, ITeleport
             {
                 m_InitialBounceSpeed = Mathf.Max(Mathf.Abs(m_verticalSpeed), m_MinBounceForce);
                 m_HasBounced = true;
-            } 
+            }
         }
         else
         {

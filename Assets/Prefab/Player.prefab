@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 7443102216490489585}
   - component: {fileID: 7609255556662029616}
   - component: {fileID: 4810978796021309454}
+  - component: {fileID: 2105139052204378344}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -161,7 +162,7 @@ MonoBehaviour:
   m_Camera: {fileID: 4558642263430438723}
   m_YawSpeed: 600
   m_pitchSpeed: 300
-  m_minPitch: -40
+  m_minPitch: -80
   m_maxPitch: 80
   m_Speed: 0
   m_speedMultiplier: 2
@@ -170,6 +171,7 @@ MonoBehaviour:
   m_footstepInterval: 0.5
   m_EnterPortalSound: {fileID: 8300000, guid: 14b1e18926b068141a67c8d2a4486d12, type: 3}
   m_ExitPortalSound: {fileID: 8300000, guid: 6b0d6a65c8a1b7b4080e70bc784d4dfe, type: 3}
+  m_LandSound: {fileID: 8300000, guid: 115c63eddbdd65644bc3de8b6596a5b3, type: 3}
   m_MinBounceForce: 4.5
   m_MovementDirection: {x: 0, y: 0, z: 0}
   m_TeleportOffset: 3
@@ -190,7 +192,7 @@ MonoBehaviour:
   m_Camera: {fileID: 4558642263430438723}
   m_BluePortal: {fileID: 0}
   m_OrangePortal: {fileID: 0}
-  m_DistanceRay: 20
+  m_DistanceRay: 50
   m_ThresholdPortal: 0.001
   m_ForceLaunch: 1500
   m_DistanceStopLerpAttract: 0.2
@@ -214,6 +216,24 @@ MonoBehaviour:
   - {fileID: 0}
   m_AttractPoint: {fileID: 5567831319629951234}
   m_AttractSpeed: 7
+--- !u!114 &2105139052204378344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1041851309828212369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80c4ca4fa88de934a860f2675a9953ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_DeathSound: {fileID: 0}
+  m_DeadZoneSound: {fileID: 0}
+  m_BloodImage: {fileID: 0}
+  m_BloodFadeInDuration: 0
+  m_TimeToKillPlayer: 0
+  m_MaxPlayerHealth: 100
 --- !u!1 &2792712934715810580
 GameObject:
   m_ObjectHideFlags: 0

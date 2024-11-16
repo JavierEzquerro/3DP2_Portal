@@ -259,11 +259,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 085efb987c8e78d429e1ad79362e8007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_MaxAngleLaserAlive: 10
+  m_TimeToKillPlayer: 0
   m_LaserRenderer: {fileID: 6055624174603138195}
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
   m_MaxDistance: 50
+  m_TurretDeathSound: {fileID: 8300000, guid: 7c8e8a0cd613f2c4b85a7b076032ab26, type: 3}
 --- !u!54 &4734973610193015863
 Rigidbody:
   m_ObjectHideFlags: 0

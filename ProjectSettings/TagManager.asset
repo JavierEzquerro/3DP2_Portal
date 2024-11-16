@@ -16,6 +16,8 @@ TagManager:
   - GravityZero
   - LaserReceiver
   - Camera
+  - DeadZone
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
