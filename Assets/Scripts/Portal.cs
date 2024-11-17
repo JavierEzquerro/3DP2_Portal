@@ -7,7 +7,10 @@ using UnityEngine;
 public class Portal : MonoBehaviour
 {
     [SerializeField] private float m_OffsetCamera; 
-    [SerializeField] private float m_SpeedAnimation; 
+    [SerializeField] private float m_SpeedAnimation;
+    [SerializeField] private List<GameObject> m_ObjectsCanClone;
+
+    private List<GameObject> m_ObjectsToClone;
     public Transform m_OtherPortalTransform;
     public Portal m_MirrorPortal;
     public Camera m_Camera;
@@ -25,6 +28,7 @@ public class Portal : MonoBehaviour
     private RaycastHit m_RaycastHitLaser;
     public float m_LaserOffset; 
 
+    
     private void Start()
     {
         m_StartSizePortal = transform.localScale; 
