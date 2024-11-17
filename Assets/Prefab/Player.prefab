@@ -187,24 +187,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fce5310ad673b94092001995938b17e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Camera: {fileID: 4558642263430438723}
   m_BluePreviewPortal: {fileID: 0}
   m_OrangePreviewPortal: {fileID: 0}
-  m_Camera: {fileID: 4558642263430438723}
   m_BluePortal: {fileID: 0}
   m_OrangePortal: {fileID: 0}
-  m_DistanceRay: 50
-  m_ThresholdPortal: 0.001
-  m_ForceLaunch: 1500
-  m_DistanceStopLerpAttract: 0.2
-  m_CrossHairBlue: {fileID: 0}
-  m_CrossHairOrange: {fileID: 0}
-  m_ScrollWheelIncrement: 15
   m_AngleValidPortal: 0
-  m_BulletPortalBlue: {fileID: 0}
-  m_BulletPortalOrange: {fileID: 0}
-  m_ShootPoint: {fileID: 0}
-  m_BluePortalSound: {fileID: 8300000, guid: 3d199e408bb6b2342b03f05f749dc4b6, type: 3}
-  m_OrangePortalSound: {fileID: 8300000, guid: 24bc4df74c4f66b4bb4d1c491cc852d1, type: 3}
+  m_ScrollWheelIncrement: 15
   m_ValidPoints:
   - {fileID: 0}
   - {fileID: 0}
@@ -214,8 +203,20 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  m_BulletPortalBlue: {fileID: 0}
+  m_BulletPortalOrange: {fileID: 0}
+  m_ShootPoint: {fileID: 0}
+  m_DistanceRay: 50
+  m_ThresholdPortal: 0.001
+  m_CrossHairBlue: {fileID: 0}
+  m_CrossHairOrange: {fileID: 0}
+  m_ForceLaunch: 1500
+  m_ObjectAttract: {fileID: 0}
   m_AttractPoint: {fileID: 5567831319629951234}
   m_AttractSpeed: 7
+  m_TrapedObject: 0
+  m_BluePortalSound: {fileID: 8300000, guid: 3d199e408bb6b2342b03f05f749dc4b6, type: 3}
+  m_OrangePortalSound: {fileID: 8300000, guid: 24bc4df74c4f66b4bb4d1c491cc852d1, type: 3}
 --- !u!114 &2105139052204378344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,12 +229,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80c4ca4fa88de934a860f2675a9953ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_DeathSound: {fileID: 0}
-  m_DeadZoneSound: {fileID: 0}
+  m_DeathSound: {fileID: 8300000, guid: 9bdd57e272b4e7c48aff0118a32d382d, type: 3}
+  m_DeadZoneSound: {fileID: 8300000, guid: 9bdd57e272b4e7c48aff0118a32d382d, type: 3}
   m_BloodImage: {fileID: 0}
-  m_BloodFadeInDuration: 0
-  m_TimeToKillPlayer: 0
+  m_TimeToHealPlayer: 2
+  m_TimeToKillPlayer: 1
   m_MaxPlayerHealth: 100
+  m_Health: 0
 --- !u!1 &2792712934715810580
 GameObject:
   m_ObjectHideFlags: 0

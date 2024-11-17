@@ -259,8 +259,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 085efb987c8e78d429e1ad79362e8007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_BoxCollider: {fileID: 0}
+  m_Rigidbody: {fileID: 0}
+  m_Portal: {fileID: 0}
+  m_MovementDirection: {x: 0, y: 0, z: 0}
+  m_StartSize: {x: 0, y: 0, z: 0}
+  m_EnterPortal: 0
+  m_Catched: 0
   m_MaxAngleLaserAlive: 10
-  m_TimeToKillPlayer: 0
   m_LaserRenderer: {fileID: 6055624174603138195}
   m_LayerMask:
     serializedVersion: 2

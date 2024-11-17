@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditorInternal.VersionControl;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,25 +10,29 @@ public class PlayerLifeController : MonoBehaviour, IRestartGame
     [SerializeField] private AudioClip m_DeadZoneSound;
 
     [SerializeField] private CanvasGroup m_BloodImage;
-    [SerializeField] private float m_BloodFadeInDuration;
     private Player_Controller m_PlayerController;
     private Animator m_PlayerAnimator;
 
+    [SerializeField] private float m_TimeToHealPlayer = 2f;
     public float m_TimeToKillPlayer;
     public float m_MaxPlayerHealth = 100;
-    private float m_Health;
+    public float m_Health;
+
     private float m_DamageTimer = 0f;
+    private float m_HealTimer = 0f;
 
     private bool m_Death = false;
 
     private void OnEnable()
     {
         Turret.OnPlayerDamagedByLaser += ApplyLaserDamage;
+        Turret.OnPlayerNotDamagedByLaser += HealOverTime;
     }
 
     private void OnDisable()
     {
         Turret.OnPlayerDamagedByLaser -= ApplyLaserDamage;
+        Turret.OnPlayerNotDamagedByLaser -= HealOverTime;
     }
 
     private void Start()
@@ -38,6 +41,12 @@ public class PlayerLifeController : MonoBehaviour, IRestartGame
         m_PlayerController = GetComponent<Player_Controller>();
         m_Health = m_MaxPlayerHealth;
         m_PlayerAnimator = GetComponent<Animator>();
+    }
+
+    private void Update()
+    {
+        Debug.Log(m_Health);
+        Debug.Log(m_BloodImage.alpha);
     }
 
     private void ApplyLaserDamage(float l_Damage)
@@ -57,8 +66,40 @@ public class PlayerLifeController : MonoBehaviour, IRestartGame
         }
     }
 
+    private void HealOverTime()
+    {
+        if (m_Death) return;
+
+        m_Health = Mathf.Clamp(m_Health + Time.deltaTime * 15f, 0f, 100f);
+
+        m_BloodImage.alpha = Mathf.Clamp(m_BloodImage.alpha - Time.deltaTime * 0.6f, 0f, 1f);
+
+        m_DamageTimer = 0f;
+    }
+
+
+    /*private void HealOverTime()
+    {
+        if (m_Death) return;
+
+        m_Health = Mathf.Min(m_Health + Time.deltaTime * m_TimeToHealPlayer, 100f);
+
+        if (m_BloodImage.alpha > 0f)
+        {
+            m_HealTimer += Time.deltaTime;
+            m_BloodImage.alpha = Mathf.Lerp(m_BloodImage.alpha, 0f, m_HealTimer / m_TimeToHealPlayer);
+        }
+        else if (m_HealTimer >= m_TimeToHealPlayer)
+        {
+            m_HealTimer = 0f;
+        }
+
+        m_DamageTimer = 0f;
+    }*/
+
     public void Death()
     {
+        SoundsManager.instance.PlaySoundClip(m_DeadZoneSound, transform, 0.2f);
         m_BloodImage.alpha = 0.0f;
         GameManager.instance.ReStartGame(false);
     }
@@ -79,7 +120,6 @@ public class PlayerLifeController : MonoBehaviour, IRestartGame
 
     public void RestartGame()
     {
-        //m_PlayerAnimator.SetBool("Death", false);
         m_Death = false;
         m_Health = m_MaxPlayerHealth;
         m_DamageTimer = 0f;
