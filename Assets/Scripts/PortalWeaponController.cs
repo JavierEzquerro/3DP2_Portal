@@ -1,11 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEditor.PlayerSettings;
 
-public class PortalWeaponController : MonoBehaviour
+public class PortalWeaponController : MonoBehaviour, IRestartGame
 {
     [Header("Portal")]
     [SerializeField] private Camera m_Camera;
@@ -17,6 +13,7 @@ public class PortalWeaponController : MonoBehaviour
     [SerializeField] private float m_ScrollWheelIncrement;
     public List<Transform> m_ValidPoints = new List<Transform>();
     private Player_Controller m_PlayerController;
+    private CharacterController m_CharacterController;
     private RaycastHit m_HitCollisoned;
     private Vector3 m_StartScale;
     private float m_Angle;
@@ -45,12 +42,19 @@ public class PortalWeaponController : MonoBehaviour
     private bool m_CanShootOrange;
     private int m_ReSize;
 
+    [Header("Animatons&Particles")]
+    [SerializeField] private Animator m_PortalWeaponAnimator;
+    [SerializeField] private ParticleSystem m_BlueParticles;
+    [SerializeField] private ParticleSystem m_OrangeParticles;
+
     [Header("Sounds")]
     [SerializeField] private AudioClip m_BluePortalSound;
     [SerializeField] private AudioClip m_OrangePortalSound;
 
     private void Start()
     {
+        GameManager.instance.AddRestartGame(this);
+
         m_AttractingObjects = false;
         m_TrapedObject = false;
 
@@ -64,6 +68,7 @@ public class PortalWeaponController : MonoBehaviour
 
         m_Angle = Mathf.Cos(m_AngleValidPortal * Mathf.Deg2Rad);
         m_PlayerController = GetComponent<Player_Controller>();
+        m_CharacterController = GetComponent<CharacterController>();
 
         //BULLET PORTAL
         m_BulletPortalBlue.gameObject.SetActive(false);
@@ -137,6 +142,8 @@ public class PortalWeaponController : MonoBehaviour
                         m_HitCollisoned = l_hit;
                         m_BulletPortalBlue.gameObject.SetActive(true);
                         m_BulletPortalBlue.Shoot(m_ShootPoint.position, l_Ray.direction);
+                        m_PortalWeaponAnimator.SetTrigger("Shoot");
+                        m_BlueParticles.Play();
                         SoundsManager.instance.PlaySoundClip(m_BluePortalSound, transform, 0.05f);
                         m_CanShootBlue = false;
                     }
@@ -146,6 +153,8 @@ public class PortalWeaponController : MonoBehaviour
                         m_HitCollisoned = l_hit;
                         m_BulletPortalOrange.gameObject.SetActive(true);
                         m_BulletPortalOrange.Shoot(m_ShootPoint.position, l_Ray.direction);
+                        m_PortalWeaponAnimator.SetTrigger("Shoot");
+                        m_OrangeParticles.Play();
                         SoundsManager.instance.PlaySoundClip(m_OrangePortalSound, transform, 0.05f);
                         m_CanShootOrange = false;
                     }
@@ -155,7 +164,6 @@ public class PortalWeaponController : MonoBehaviour
                     m_BluePreviewPortal.SetActive(false);
                     m_OrangePreviewPortal.SetActive(false);
                 }
-
             }
 
             //ATTRACT OBJECTS
@@ -209,6 +217,13 @@ public class PortalWeaponController : MonoBehaviour
             m_RbObjectAttract.useGravity = true;
             m_ObjectCollider.enabled = true;
         }
+
+        if (m_CharacterController.velocity.magnitude > 1.0f)
+        {
+            m_PortalWeaponAnimator.SetFloat("Speed", m_CharacterController.velocity.magnitude);
+        }
+        else
+            m_PortalWeaponAnimator.SetFloat("Speed", m_CharacterController.velocity.magnitude);
     }
 
     private void FixedUpdate()
@@ -333,6 +348,14 @@ public class PortalWeaponController : MonoBehaviour
     }
 
     public void NewSector()
+    {
+        m_BluePortal.SetActive(false);
+        m_OrangePortal.SetActive(false);
+        m_CrossHairBlue.SetActive(false);
+        m_CrossHairOrange.SetActive(false);
+    }
+
+    public void RestartGame()
     {
         m_BluePortal.SetActive(false);
         m_OrangePortal.SetActive(false);

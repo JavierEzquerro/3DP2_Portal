@@ -43,12 +43,6 @@ public class PlayerLifeController : MonoBehaviour, IRestartGame
         m_PlayerAnimator = GetComponent<Animator>();
     }
 
-    private void Update()
-    {
-        Debug.Log(m_Health);
-        Debug.Log(m_BloodImage.alpha);
-    }
-
     private void ApplyLaserDamage(float l_Damage)
     {
         if (m_Death) return;
@@ -99,7 +93,7 @@ public class PlayerLifeController : MonoBehaviour, IRestartGame
 
     public void Death()
     {
-        SoundsManager.instance.PlaySoundClip(m_DeadZoneSound, transform, 0.2f);
+        SoundsManager.instance.PlaySoundClip(m_DeathSound, transform, 0.2f);
         m_BloodImage.alpha = 0.0f;
         GameManager.instance.ReStartGame(false);
     }

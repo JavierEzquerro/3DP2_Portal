@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
 
     public List<IRestartGame> m_RestartGame = new List<IRestartGame>();
 
-    private List<Turret> m_TurretsToRestart = new List<Turret>();
+    private Animator m_PortalWeaponAnimator;
 
     public bool m_Restart;
     private bool m_GameHasEnded = false;
@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        m_PortalWeaponAnimator = m_PortalWeaponController.GetComponentInChildren<Animator>();
+        m_PortalWeaponAnimator.enabled = true;
     }
 
     private void Update()
@@ -79,16 +81,11 @@ public class GameManager : MonoBehaviour
         m_RestartGame.Add(l_Restart);
     }
 
-    public void AddTurretToRestart(Turret l_Turret)
-    {
-        m_TurretsToRestart.Add(l_Turret);
-    }
-
     public void ReStartGame(bool l_EndGame)
     {
         if (l_EndGame)
         {
-            //m_Player.StopAnimation();
+            m_PortalWeaponAnimator.enabled = false;
             m_WinDeathText.text = "You Win";
             m_NewGameButtonText.text = "Menu";
             m_GameHasEnded = true;
@@ -100,6 +97,7 @@ public class GameManager : MonoBehaviour
         m_CharacterController.enabled = false;
         m_PlayerController.enabled = false;
         m_PortalWeaponController.enabled = false;
+        m_PortalWeaponAnimator.enabled = false;
         m_GameUI.SetActive(false);
         m_DeathUI.SetActive(true);
     }
@@ -118,12 +116,6 @@ public class GameManager : MonoBehaviour
                 l_Controller.RestartGame();
             }
 
-            foreach (Turret l_Turret in m_TurretsToRestart)
-            {
-                if (l_Turret != null)
-                    l_Turret.RestartGame();
-            }
-
             Cursor.lockState = CursorLockMode.Locked;
             StartCoroutine(PlayerActive());
         }
@@ -135,6 +127,7 @@ public class GameManager : MonoBehaviour
         m_CharacterController.enabled = true;
         m_PlayerController.enabled = true;
         m_PortalWeaponController.enabled = true;
+        m_PortalWeaponAnimator.enabled = true;
         m_PlayerController.SetSpeed();
         m_Restart = false;
     }
