@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 5410044178206360360}
   - component: {fileID: 5435248062236916235}
   - component: {fileID: 6200114190360138411}
+  - component: {fileID: 531156884452081842}
+  - component: {fileID: 8659974967434326779}
   m_Layer: 3
   m_Name: Window
   m_TagString: Untagged
@@ -83,6 +85,40 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &531156884452081842
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904738107123081711}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &8659974967434326779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904738107123081711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c30ba207ede30344bc8f32379a48624, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1118372592915312811
 GameObject:
   m_ObjectHideFlags: 0
@@ -355,6 +391,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_OffsetCamera: 0.9
   m_SpeedAnimation: 2
+  m_ObjectsCanClone:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   m_OtherPortalTransform: {fileID: 438421046736084437}
   m_MirrorPortal: {fileID: 0}
   m_Camera: {fileID: 8567377526475811930}
