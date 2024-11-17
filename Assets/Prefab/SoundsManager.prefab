@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SoundManager: {fileID: 1328401746736355437}
-  m_SoundManager3D: {fileID: 0}
+  m_SoundManager3D: {fileID: 988584974830031583}
   m_AmbienceSoundClips: []
   m_MetalFootstepClips: []
   m_RockFootstepClips:

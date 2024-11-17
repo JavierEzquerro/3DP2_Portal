@@ -27,11 +27,42 @@ public class GameManager : MonoBehaviour
 
     public bool m_Restart;
     private bool m_GameHasEnded = false;
+    private bool m_PlayerBeingDamagedThisFrame = false;
+    private float m_TotalDamagePerSecond = 0f;
 
     private void Awake()
     {
         instance = this;
     }
+
+    private void Update()
+    {
+        StartCoroutine(CheckPlayerHitStatus());
+    }
+
+    public void ReportPlayerDamaged(float l_DamagePerSecond)
+    {
+        m_PlayerBeingDamagedThisFrame = true;
+        m_TotalDamagePerSecond += l_DamagePerSecond;
+    }
+
+    private IEnumerator CheckPlayerHitStatus()
+    {
+        yield return new WaitForEndOfFrame();
+
+        if (m_PlayerBeingDamagedThisFrame)
+        {
+            Turret.OnPlayerDamagedByLaser?.Invoke(m_TotalDamagePerSecond);
+        }
+        else
+        {
+            Turret.OnPlayerNotDamagedByLaser?.Invoke();
+        }
+
+        m_PlayerBeingDamagedThisFrame = false;
+        m_TotalDamagePerSecond = 0f;
+    }
+
 
     public void SetPlayer(Player_Controller l_Player)
     {
@@ -89,7 +120,8 @@ public class GameManager : MonoBehaviour
 
             foreach (Turret l_Turret in m_TurretsToRestart)
             {
-                l_Turret.RestartGame();
+                if (l_Turret != null)
+                    l_Turret.RestartGame();
             }
 
             Cursor.lockState = CursorLockMode.Locked;

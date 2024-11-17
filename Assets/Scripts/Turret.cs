@@ -5,8 +5,8 @@ public class Turret : TeleportableObjects, IRestartGame
 {
     [SerializeField] private float m_MaxAngleLaserAlive = 10.0f;
 
-    private Vector3 m_StartPosition; 
-    private Quaternion m_StartRotation; 
+    private Vector3 m_StartPosition;
+    private Quaternion m_StartRotation;
 
     public LineRenderer m_LaserRenderer;
     public LayerMask m_LayerMask;
@@ -15,13 +15,14 @@ public class Turret : TeleportableObjects, IRestartGame
     [Header("Sounds")]
     [SerializeField] private AudioClip m_TurretDeathSound;
 
+    public static bool m_IsPlayerBeingHit = false;
     public static Action OnLaserReceived;
     public static Action<float> OnPlayerDamagedByLaser;
+    public static Action OnPlayerNotDamagedByLaser;
 
-    
     public override void Start()
     {
-        base.Start(); 
+        base.Start();
         GameManager.instance.AddTurretToRestart(this);
         m_StartPosition = transform.position;
         m_StartRotation = transform.rotation;
@@ -30,6 +31,7 @@ public class Turret : TeleportableObjects, IRestartGame
     public override void Update()
     {
         base.Update();
+
         if (IsLaserAlive())
         {
             Ray l_Ray = new Ray(m_LaserRenderer.transform.position, m_LaserRenderer.transform.forward);
@@ -65,12 +67,13 @@ public class Turret : TeleportableObjects, IRestartGame
                 {
                     OnLaserReceived?.Invoke();
                 }
-                else if (l_HitInfo.collider.TryGetComponent(out PlayerLifeController l_PlayerLifeController))
+
+                if (l_HitInfo.collider.CompareTag("Player") && l_HitInfo.collider.TryGetComponent(out PlayerLifeController l_PlayerLifeController))
                 {
                     float l_LaserDuration = l_PlayerLifeController.m_TimeToKillPlayer;
-                    float l_MaxHealthPlayerHealth = l_PlayerLifeController.m_MaxPlayerHealth;
-                    float l_DamagePerSecond = l_MaxHealthPlayerHealth / l_LaserDuration;
-                    OnPlayerDamagedByLaser?.Invoke(Time.deltaTime * l_DamagePerSecond);
+                    float l_PlayerHealth = l_PlayerLifeController.m_MaxPlayerHealth;
+                    float l_DamagePerSecond = l_PlayerHealth / l_LaserDuration;
+                    GameManager.instance.ReportPlayerDamaged(l_DamagePerSecond);
                 }
             }
         }
