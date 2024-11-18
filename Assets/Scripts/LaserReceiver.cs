@@ -8,11 +8,13 @@ public class LaserReceiver : MonoBehaviour
     private void OnEnable()
     {
         Turret.OnLaserReceived += LaserReceived;
+        LaserEmitter.OnLaserReceived += LaserReceived;
     }
 
     private void OnDisable()
     {
         Turret.OnLaserReceived -= LaserReceived;
+        LaserEmitter.OnLaserReceived -= LaserReceived;
     }
 
     private void LaserReceived()

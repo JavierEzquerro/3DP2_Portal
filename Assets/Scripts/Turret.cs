@@ -21,7 +21,6 @@ public class Turret : TeleportableObjects, IRestartGame
     [Header("Particles")]
     [SerializeField] private ParticleSystem m_TurretExplosionParticles;
 
-    public static bool m_IsPlayerBeingHit = false;
     public static Action OnLaserReceived;
     public static Action<float> OnPlayerDamagedByLaser;
     public static Action OnPlayerNotDamagedByLaser;

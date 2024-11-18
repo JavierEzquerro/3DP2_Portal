@@ -38,6 +38,5 @@ public class RefractionCube : MonoBehaviour
         }
         else
             m_LaserRenderer.gameObject.SetActive(false);
-
     }
 }

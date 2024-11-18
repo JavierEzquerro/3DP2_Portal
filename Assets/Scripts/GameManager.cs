@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private CharacterController m_CharacterController;
     [SerializeField] private Player_Controller m_PlayerController;
     [SerializeField] private PortalWeaponController m_PortalWeaponController;
+    [SerializeField] private PlayerLifeController m_PlayerLifeController;
     [SerializeField] private TMP_Text m_WinDeathText;
     [SerializeField] private TMP_Text m_NewGameButtonText;
     [SerializeField] private FadeController m_FadeController;
@@ -59,6 +60,7 @@ public class GameManager : MonoBehaviour
         else
         {
             Turret.OnPlayerNotDamagedByLaser?.Invoke();
+            m_PlayerLifeController.m_HitSoundPlayed = false;
         }
 
         m_PlayerBeingDamagedThisFrame = false;

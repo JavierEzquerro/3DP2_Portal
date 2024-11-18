@@ -234,6 +234,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_DeathSound: {fileID: 8300000, guid: 9bdd57e272b4e7c48aff0118a32d382d, type: 3}
   m_DeadZoneSound: {fileID: 8300000, guid: d22c202a3c29c2e40b860f13a4cf4f40, type: 3}
+  m_PlayerHitSound: {fileID: 8300000, guid: 0640e51a4a31b964d86863d962d8a122, type: 3}
   m_BloodImage: {fileID: 0}
   m_TimeToHealPlayer: 2
   m_TimeToKillPlayer: 1
@@ -304,15 +305,15 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.04
+  near clip plane: 0.01
   far clip plane: 1000
-  field of view: 70
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 61
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -484,7 +485,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.01
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -746,6 +747,14 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: f1dbecfec0db73a499fc34af459d686d, type: 3}
       propertyPath: m_Name
       value: PortalGunTextured
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f1dbecfec0db73a499fc34af459d686d, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f1dbecfec0db73a499fc34af459d686d, type: 3}
+      propertyPath: m_TagString
+      value: Weapon
       objectReference: {fileID: 0}
     - target: {fileID: 6519364143691652802, guid: f1dbecfec0db73a499fc34af459d686d, type: 3}
       propertyPath: m_Materials.Array.data[0]

@@ -24,7 +24,6 @@ public class CubeButton : MonoBehaviour, IRestartGame
         if (other.CompareTag("CompanionCube"))
         {
             m_CubeAnimator.SetBool("CubeButtonPressed", true);
-            SoundsManager.instance.PlaySoundClip(m_ButtonClickedSound, transform, 0.2f);
             m_OnButtonClickedEvent?.Invoke();
         }
     }
@@ -34,9 +33,13 @@ public class CubeButton : MonoBehaviour, IRestartGame
         if (other.CompareTag("CompanionCube"))
         {
             m_CubeAnimator.SetBool("CubeButtonPressed", false);
-            SoundsManager.instance.PlaySoundClip(m_ButtonDeClickedSound, transform, 0.2f);
             m_OnButtonDeClickedEvent?.Invoke();
         }
+    }
+
+    public void PlayButtonSound(AudioClip l_Sound)
+    {
+        SoundsManager.instance.PlaySoundClip(l_Sound, transform, 0.2f);
     }
 
     public void RestartGame()

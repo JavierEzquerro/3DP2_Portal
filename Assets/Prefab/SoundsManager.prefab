@@ -72,7 +72,7 @@ GameObject:
   - component: {fileID: 988584974830031583}
   m_Layer: 0
   m_Name: Sounds3DFX
-  m_TagString: Untagged
+  m_TagString: SoundsFX
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 1328401746736355437}
   m_Layer: 0
   m_Name: SoundsFX
-  m_TagString: Untagged
+  m_TagString: SoundsFX
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -328,7 +328,7 @@ GameObject:
   - component: {fileID: 4389231117883325374}
   m_Layer: 0
   m_Name: Music
-  m_TagString: Untagged
+  m_TagString: SoundsFX
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

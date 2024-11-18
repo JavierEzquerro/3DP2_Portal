@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class SoundsManager : MonoBehaviour
+public class SoundsManager : MonoBehaviour, IRestartGame
 {
     public enum SurfaceType
     {
@@ -29,6 +29,11 @@ public class SoundsManager : MonoBehaviour
         {
             instance = this;
         }
+    }
+
+    private void Start()
+    {
+        GameManager.instance.AddRestartGame(this);
     }
 
     public void PlayFootstepSound(Transform _transform, float volume, SurfaceType surfaceType)
@@ -144,5 +149,10 @@ public class SoundsManager : MonoBehaviour
                 audioSource.Stop();
             }
         }
+    }
+
+    public void RestartGame()
+    {
+        StopAllSounds();
     }
 }

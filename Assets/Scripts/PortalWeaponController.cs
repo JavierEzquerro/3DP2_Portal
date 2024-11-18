@@ -167,7 +167,7 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
             }
 
             //ATTRACT OBJECTS
-            if (l_hit.collider.CompareTag("CompanionCube") || l_hit.collider.CompareTag("Turret"))
+            if (l_hit.collider.CompareTag("CompanionCube") || l_hit.collider.CompareTag("Turret") || l_hit.collider.CompareTag("RefractionCube"))
             {
                 if (Input.GetMouseButtonDown(0) && !m_TrapedObject && !m_AttractingObjects)
                 {

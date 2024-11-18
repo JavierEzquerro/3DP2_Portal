@@ -29418,7 +29418,7 @@ MonoBehaviour:
   m_LaserRenderer: {fileID: 6055624174603138195}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 123
   m_MaxDistance: 50
   m_TurretDeathSound: {fileID: 8300000, guid: 7c8e8a0cd613f2c4b85a7b076032ab26, type: 3}
   m_ExplosionSound: {fileID: 8300000, guid: 44ecfe0f738ceeb4e8ff5c942cd14f46, type: 3}
