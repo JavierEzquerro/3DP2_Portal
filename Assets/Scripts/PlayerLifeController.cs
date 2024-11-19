@@ -45,8 +45,7 @@ public class PlayerLifeController : MonoBehaviour, IRestartGame
 
     private void Update()
     {
-        Debug.Log(m_Health);
-        Debug.Log(m_BloodImage.alpha);
+
     }
 
     private void ApplyLaserDamage(float l_Damage)

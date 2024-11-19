@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -8,14 +9,13 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
 {
     private CharacterController m_CharacterController;
     private PortalWeaponController m_PortalWeaponController;
-    // private Animator m_Animator;
+    // private Animator m_Animator; 
     public Transform m_PitchController;
     private float m_Yaw;
     private float m_Pitch;
     private float m_FootstepTimer;
     private float m_JumpDelay = 0.1f;
     private float m_JumpDelayTimer = 0f;
-
     public bool m_CanMove { get; set; } = true;
 
     private Quaternion m_StartRotation;
@@ -23,6 +23,7 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
 
     public Camera m_Camera;
 
+    [SerializeField] private GameObject m_CenterPlayer; 
     [SerializeField] private float m_YawSpeed;
     [SerializeField] private float m_pitchSpeed;
     [SerializeField] private float m_minPitch;
@@ -32,6 +33,8 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
     [SerializeField] private float m_verticalSpeed;
     [SerializeField] private float m_JumpSpeed;
     [SerializeField] private float m_footstepInterval;
+    [SerializeField] private float m_GravityForce = 2;
+
 
     [Header("Keys")]
     private KeyCode m_LeftKeyCode = KeyCode.A;
@@ -66,6 +69,14 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
     private Vector3 m_PreviousOffsetFromPortal;
 
     public static Action<bool> OnCheckpointEntered;
+    private bool m_AddPortalPhysics;
+    private float m_TimePhysicsPortal = 0;
+    private float m_TimeStopCharacterLerp = 0;
+    private Vector3 m_ForwardLaunch;
+    private Vector3 m_exitVelocity;
+    private Vector3 m_CurrentVelocity;
+    private float m_SpeedLaunch = 2;
+    private Vector3 m_PreviousPosition;
 
     private void Awake()
     {
@@ -88,6 +99,7 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
         m_FootstepTimer = 0f;
         m_GravityZone = false;
         m_StartSpeed = m_Speed;
+        m_AddPortalPhysics = false;
     }
 
     void Update()
@@ -111,6 +123,7 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
 
         if (!m_CanMove) return;
 
+        //
         m_MovementDirection = Vector3.zero;
 
         if (Input.GetKey(m_RightKeyCode))
@@ -124,6 +137,16 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
 
         else if (Input.GetKey(m_DownKeyCode))
             m_MovementDirection -= l_forward;
+
+        if (m_MovementDirection == Vector3.zero)
+        {
+            m_TimeStopCharacterLerp = Mathf.Clamp01(m_TimeStopCharacterLerp + Time.deltaTime * 10);
+            m_MovementDirection = Vector3.Lerp(m_MovementDirection, Vector3.zero, m_TimeStopCharacterLerp);
+        }
+        else
+        {
+            m_TimeStopCharacterLerp = 0;
+        }
 
         m_MovementDirection.Normalize();
 
@@ -155,13 +178,17 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
             m_Speed = m_StartSpeed / 4;
             l_MovementDirection += m_ZeroGravity.m_Direction * m_ZeroGravity.m_Speed * Time.deltaTime;
         }
+        else if (m_AddPortalPhysics)
+        {
+            m_CurrentVelocity.y += Physics.gravity.y * Time.deltaTime * m_GravityForce;
+            m_CharacterController.Move(m_CurrentVelocity * Time.deltaTime);
+        }
         else
         {
             m_Speed = m_StartSpeed;
-            m_verticalSpeed += Physics.gravity.y * Time.deltaTime;
+            m_verticalSpeed += Physics.gravity.y * Time.deltaTime * m_GravityForce;
             l_MovementDirection.y = m_verticalSpeed * Time.deltaTime;
         }
-
 
         CollisionFlags l_CollisionFlags = m_CharacterController.Move(l_MovementDirection);
 
@@ -175,24 +202,23 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
 
         if (m_CharacterController.velocity.magnitude > 0.001f && m_CharacterController.isGrounded)
         {
-            // m_Animator.SetBool("Walking", true);
             HandleFootstepSound();
         }
-        //else
-        //m_Animator.SetBool("Walking", false);
 
         float l_DotMovementForward = Vector3.Dot(transform.forward, l_MovementDirection.normalized);
 
         if (m_EnterPortal)
         {
-            Vector3 l_Offset = m_Portal.transform.position - transform.position;
+            Vector3 l_Offset = m_Portal.transform.position - m_CenterPlayer.transform.position;
 
-            if (Vector3.Dot(m_Portal.transform.forward, l_Offset.normalized) > -0.002)
+            if (Vector3.Dot(m_Portal.transform.forward, l_Offset.normalized) > 0.0f)
             {
                 Teleport(m_Portal);
                 m_EnterPortal = false;
             }
         }
+        Debug.Log("Yaw" + m_Yaw);
+        Debug.Log("Pitch" + m_Pitch);
     }
 
     private void DetectSurface()
@@ -256,6 +282,10 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
     {
         if (other.CompareTag("Portal"))
         {
+            if (!m_AddPortalPhysics)
+            {
+            }
+
             m_EnterPortal = true;
             m_Portal = other.GetComponent<Portal>();
             Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, true);
@@ -281,7 +311,6 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
             }
         }
     }
-
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Portal"))
@@ -300,6 +329,43 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
 
     public void Teleport(Portal l_portal)
     {
+        float l_Velocity = m_CharacterController.velocity.magnitude;
+        float l_DotPortalToVectorUp = Mathf.Abs(Vector3.Dot(Vector3.up, l_portal.transform.forward));
+        float l_DotMirrorPortalToVectorUp = Mathf.Abs(Vector3.Dot(Vector3.up, l_portal.m_MirrorPortal.transform.forward));
+        float l_DotPortals = Vector3.Dot(l_portal.transform.forward, l_portal.m_MirrorPortal.m_MirrorPortal.transform.forward);
+        m_AddPortalPhysics = true;
+
+        if (l_DotPortalToVectorUp <= 0.1f)
+        {
+            //Entro y Salgo por portales en pared
+            if (l_DotMirrorPortalToVectorUp <= 0.1f)
+                m_AddPortalPhysics = false;
+
+            //Entro por portal en pared y salgo por el suelo
+            if (l_DotMirrorPortalToVectorUp >= 0.9)
+            {
+                if (m_CharacterController.velocity.y <= 5.0f)
+                {
+                    l_Velocity = 8.0f;
+                }
+            }
+        }
+
+        if (l_DotPortalToVectorUp >= 0.9f)
+        {
+            //Entro y salgo por portales en el suelo
+            if (l_DotMirrorPortalToVectorUp >= 0.9f)
+            {
+                if (m_CharacterController.velocity.magnitude <= 2.0f)
+                {
+                    l_Velocity = 8.0f;
+                }
+            }
+        }
+
+        m_ForwardLaunch = l_portal.m_MirrorPortal.transform.forward;
+        m_CurrentVelocity = m_ForwardLaunch * l_Velocity;
+
         Vector3 l_Position = transform.position; //Obtener Posicion en mundo
         Vector3 l_LocalPosition = l_portal.m_OtherPortalTransform.InverseTransformPoint(l_Position); //Pasar de Posicion mundo a local
         Vector3 l_WorldPosition = l_portal.m_MirrorPortal.transform.TransformPoint(l_LocalPosition); //Convertir la local al otro portal. 
@@ -308,20 +374,22 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
         Vector3 l_LocalForward = l_portal.m_OtherPortalTransform.InverseTransformDirection(l_Forward);
         Vector3 l_WorldForward = l_portal.m_MirrorPortal.transform.TransformDirection(l_LocalForward);
 
-        Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, false);
-
         SoundsManager.instance.PlaySoundClip(m_EnterPortalSound, transform, 0.1f);
         m_CharacterController.enabled = false;
         transform.position = l_WorldPosition;
         transform.forward = l_WorldForward;
-        m_Yaw = transform.eulerAngles.y;
+
+        if(l_DotMirrorPortalToVectorUp <= 0.1f)
+            m_Yaw = transform.eulerAngles.y;
+        
         m_CharacterController.enabled = true;
         SoundsManager.instance.PlaySoundClip(m_ExitPortalSound, transform, 0.1f);
+        Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, false);
 
         if (m_PortalWeaponController.m_TrapedObject)
         {
             m_PortalWeaponController.m_ObjectAttract.transform.localScale =
-                m_PortalWeaponController.m_ObjectAttract.GetComponent<TeleportableObjects>().m_StartSize * m_Portal.m_PortalSize;  
+                m_PortalWeaponController.m_ObjectAttract.GetComponent<TeleportableObjects>().m_StartSize * m_Portal.m_PortalSize;
         }
     }
 
@@ -342,6 +410,11 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
         else
         {
             m_HasBounced = false;
+        }
+
+        if (collision.collider.CompareTag("WhiteWall") && m_AddPortalPhysics)
+        {
+            m_AddPortalPhysics = false;
         }
     }
 }

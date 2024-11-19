@@ -52,7 +52,6 @@ public class Turret : TeleportableObjects, IRestartGame
                     if (m_Portal != null)
                     {
                         m_Portal.m_LaserEnabled = false;
-                        Debug.Log("No laser");
                     }
                     SoundsManager.instance.PlaySoundClip(m_TurretDeathSound, transform, 0.2f);
                     Destroy(l_HitInfo.collider.gameObject);
