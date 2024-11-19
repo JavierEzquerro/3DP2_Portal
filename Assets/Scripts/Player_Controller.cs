@@ -9,7 +9,6 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
 {
     private CharacterController m_CharacterController;
     private PortalWeaponController m_PortalWeaponController; 
-    // private Animator m_Animator; 
     public Transform m_PitchController;
     private float m_Yaw;
     private float m_Pitch;
@@ -17,10 +16,8 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
     private float m_JumpDelay = 0.1f;
     private float m_JumpDelayTimer = 0f;
     public bool m_CanMove { get; set; } = true;
-
     private Quaternion m_StartRotation;
     private Vector3 m_StartPosition;
-
     public Camera m_Camera;
 
     [SerializeField] private GameObject m_CenterPlayer; 
@@ -35,13 +32,11 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
     [SerializeField] private float m_footstepInterval;
     [SerializeField] private float m_GravityForce = 2;
 
-
     [Header("Keys")]
     private KeyCode m_LeftKeyCode = KeyCode.A;
     private KeyCode m_RightKeyCode = KeyCode.D;
     private KeyCode m_UpKeyCode = KeyCode.W;
     private KeyCode m_DownKeyCode = KeyCode.S;
-    private KeyCode m_LeftShiftCode = KeyCode.LeftShift;
     private KeyCode m_JumpKeyCode = KeyCode.Space;
 
     [Header("Sounds")]
@@ -72,7 +67,6 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
 
     public static Action<bool> OnCheckpointEntered;
     private bool m_AddPortalPhysics;
-    private float m_TimePhysicsPortal = 0;
     private float m_TimeStopCharacterLerp = 0;
     private Vector3 m_ForwardLaunch;
     private Vector3 m_exitVelocity;
