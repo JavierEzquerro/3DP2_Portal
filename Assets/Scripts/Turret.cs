@@ -71,10 +71,8 @@ public class Turret : TeleportableObjects, IRestartGame
                 else if (l_HitInfo.collider.CompareTag("LaserReceiver"))
                 {
                     OnLaserReceived?.Invoke();
-                    l_HitInfo.collider.gameObject.SetActive(false);
                 }
-
-                if (l_HitInfo.collider.CompareTag("Player") && l_HitInfo.collider.TryGetComponent(out PlayerLifeController l_PlayerLifeController))
+                else if (l_HitInfo.collider.CompareTag("Player") && l_HitInfo.collider.TryGetComponent(out PlayerLifeController l_PlayerLifeController))
                 {
                     float l_LaserDuration = l_PlayerLifeController.m_TimeToKillPlayer;
                     float l_PlayerHealth = l_PlayerLifeController.m_MaxPlayerHealth;

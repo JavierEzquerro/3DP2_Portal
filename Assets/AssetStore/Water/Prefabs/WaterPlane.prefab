@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 440718}
   - component: {fileID: 3358266}
   - component: {fileID: 2368724}
-  - component: {fileID: 11489712}
   - component: {fileID: 1890416905115600724}
   - component: {fileID: 2523948492418398976}
   - component: {fileID: 3046056425097881733}
+  - component: {fileID: 11489712}
   m_Layer: 0
   m_Name: WaterPlane
   m_TagString: Untagged
@@ -89,25 +89,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &11489712
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 134676}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0294cf6ab82668142b65a8af47752f8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_DisablePixelLights: 1
-  m_TextureSize: 256
-  m_ClipPlaneOffset: 0.07
-  m_ReflectLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  ignoreOcclusionCulling: 1
 --- !u!65 &1890416905115600724
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -162,6 +143,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f451d2b8f552097408637f842c0f4487, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_CubeDestroyedSound: {fileID: 8300000, guid: d22c202a3c29c2e40b860f13a4cf4f40, type: 3}
+--- !u!114 &11489712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0294cf6ab82668142b65a8af47752f8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_DisablePixelLights: 1
+  m_TextureSize: 256
+  m_ClipPlaneOffset: 0.07
+  m_ReflectLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  ignoreOcclusionCulling: 1
 --- !u!1 &1144622364408550
 GameObject:
   m_ObjectHideFlags: 0

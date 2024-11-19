@@ -50,7 +50,6 @@ public class RefractionCube : TeleportableObjects
             else if (l_HitInfo.collider.CompareTag("LaserReceiver"))
             {
                 OnLaserReceived?.Invoke();
-                l_HitInfo.collider.gameObject.SetActive(false);
             }
 
         }

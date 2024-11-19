@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CheckpointController : MonoBehaviour
 {
     [SerializeField] private GameObject m_SavedGameIcon;
+
+    public UnityEvent m_OnCheckpointEntered;
 
     private bool isChecked = false;
 
@@ -41,7 +44,10 @@ public class CheckpointController : MonoBehaviour
     private void ShowIcon(bool l_Checkpoint)
     {
         if (l_Checkpoint)
+        {
             StartCoroutine(ShowIconCoruotine());
+            m_OnCheckpointEntered?.Invoke();
+        }
     }
 
     private IEnumerator ShowIconCoruotine()

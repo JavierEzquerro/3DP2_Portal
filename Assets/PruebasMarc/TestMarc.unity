@@ -231,6 +231,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4116259839626626, guid: c21252cbe01eccd4a967b728d0b09f5a, type: 3}
   m_PrefabInstance: {fileID: 131505113}
   m_PrefabAsset: {fileID: 0}
+--- !u!225 &134754951 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 2271576388817968814, guid: 55673922f51c78849962b125bba5aeb3, type: 3}
+  m_PrefabInstance: {fileID: 1235262217}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &140316140
 GameObject:
   m_ObjectHideFlags: 0
@@ -529,10 +534,11 @@ MonoBehaviour:
   m_GameUI: {fileID: 0}
   m_CharacterController: {fileID: 0}
   m_PlayerController: {fileID: 0}
-  m_TextCanvas: {fileID: 0}
-  m_NewGameText: {fileID: 0}
-  m_MaxBulletEnemyOnScene: 0
-  m_direction: {x: 0, y: 0, z: 0}
+  m_PortalWeaponController: {fileID: 0}
+  m_PlayerLifeController: {fileID: 0}
+  m_WinDeathText: {fileID: 0}
+  m_NewGameButtonText: {fileID: 0}
+  m_FadeController: {fileID: 0}
   m_Restart: 0
 --- !u!4 &276979121
 Transform:
@@ -622,6 +628,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2105139052204378344, guid: b8eba3a3a48981543bb6a4d743da716a, type: 3}
+      propertyPath: m_BloodImage
+      value: 
+      objectReference: {fileID: 134754951}
     - target: {fileID: 3611733233790277050, guid: b8eba3a3a48981543bb6a4d743da716a, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -657,7 +667,7 @@ PrefabInstance:
     - target: {fileID: 4810978796021309454, guid: b8eba3a3a48981543bb6a4d743da716a, type: 3}
       propertyPath: m_CrossHairBlue
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2008206681}
     - target: {fileID: 4810978796021309454, guid: b8eba3a3a48981543bb6a4d743da716a, type: 3}
       propertyPath: m_PreviewPortal
       value: 
@@ -665,7 +675,7 @@ PrefabInstance:
     - target: {fileID: 4810978796021309454, guid: b8eba3a3a48981543bb6a4d743da716a, type: 3}
       propertyPath: m_CrossHairOrange
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 865278745}
     - target: {fileID: 4810978796021309454, guid: b8eba3a3a48981543bb6a4d743da716a, type: 3}
       propertyPath: m_AngleValidPortal
       value: 3
@@ -1059,12 +1069,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 085efb987c8e78d429e1ad79362e8007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_BoxCollider: {fileID: 0}
+  m_Rigidbody: {fileID: 0}
+  m_Portal: {fileID: 0}
+  m_MovementDirection: {x: 0, y: 0, z: 0}
+  m_StartSize: {x: 0, y: 0, z: 0}
+  m_EnterPortal: 0
+  m_Catched: 0
+  m_MaxAngleLaserAlive: 10
   m_LaserRenderer: {fileID: 716357308}
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
   m_MaxDistance: 57.1
-  m_MaxAngleLaserAlive: 10
+  m_TurretDeathSound: {fileID: 0}
+  m_ExplosionSound: {fileID: 0}
+  m_TurretExplosionParticles: {fileID: 0}
 --- !u!4 &482967004 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400008, guid: e974cdd27b308e14fadbc5fef531fbbc, type: 3}
@@ -1295,6 +1315,7 @@ MonoBehaviour:
   m_CharacterController: {fileID: 0}
   m_TargetLandingPosition: {fileID: 1244815745}
   m_LaunchHeight: 5
+  m_LaunchSound: {fileID: 0}
 --- !u!65 &673987612
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1540,6 +1561,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c76b1f698d878de4c99fd40cbb18fcf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_BoxCollider: {fileID: 0}
+  m_Rigidbody: {fileID: 0}
+  m_Portal: {fileID: 0}
+  m_MovementDirection: {x: 0, y: 0, z: 0}
+  m_StartSize: {x: 0, y: 0, z: 0}
+  m_EnterPortal: 0
+  m_Catched: 0
   m_LaserRenderer: {fileID: 1943092198}
   m_LayerMask:
     serializedVersion: 2
@@ -1648,6 +1676,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &865278745 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5076172689926814418, guid: 55673922f51c78849962b125bba5aeb3, type: 3}
+  m_PrefabInstance: {fileID: 1235262217}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &895699117
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2254,6 +2287,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1913702236432231212, guid: 55673922f51c78849962b125bba5aeb3, type: 3}
       propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913702236432231212, guid: 55673922f51c78849962b125bba5aeb3, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913702236432231212, guid: 55673922f51c78849962b125bba5aeb3, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913702236432231212, guid: 55673922f51c78849962b125bba5aeb3, type: 3}
+      propertyPath: m_LocalScale.z
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1913702236432231212, guid: 55673922f51c78849962b125bba5aeb3, type: 3}
@@ -3075,6 +3120,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c76b1f698d878de4c99fd40cbb18fcf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_BoxCollider: {fileID: 0}
+  m_Rigidbody: {fileID: 0}
+  m_Portal: {fileID: 0}
+  m_MovementDirection: {x: 0, y: 0, z: 0}
+  m_StartSize: {x: 0, y: 0, z: 0}
+  m_EnterPortal: 0
+  m_Catched: 0
   m_LaserRenderer: {fileID: 1061061878}
   m_LayerMask:
     serializedVersion: 2
@@ -3551,6 +3603,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9eddf26057390cb40a4f054ef935c559, type: 3}
+--- !u!1 &2008206681 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4670273378595357120, guid: 55673922f51c78849962b125bba5aeb3, type: 3}
+  m_PrefabInstance: {fileID: 1235262217}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2086785856 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4116259839626626, guid: c21252cbe01eccd4a967b728d0b09f5a, type: 3}
@@ -3828,6 +3885,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_ButtonClickedSound: {fileID: 0}
+  m_ButtonDeClickedSound: {fileID: 0}
 --- !u!135 &919132148396391758
 SphereCollider:
   m_ObjectHideFlags: 0
