@@ -217,8 +217,11 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
                 m_EnterPortal = false;
             }
         }
-        Debug.Log("Yaw" + m_Yaw);
-        Debug.Log("Pitch" + m_Pitch);
+
+        if (Input.GetKey(KeyCode.T))
+            Time.timeScale = 0.05f;
+        else
+            Time.timeScale = 1.0f;
     }
 
     private void DetectSurface()
@@ -282,10 +285,6 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
     {
         if (other.CompareTag("Portal"))
         {
-            if (!m_AddPortalPhysics)
-            {
-            }
-
             m_EnterPortal = true;
             m_Portal = other.GetComponent<Portal>();
             Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, true);

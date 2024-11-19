@@ -10,7 +10,6 @@ public class CloneObjectController : MonoBehaviour
     private Portal m_MirrorPortal; 
     private Transform m_PortalTransform;
     private Vector3 m_StartSize; 
-
     void Start()
     {
         m_Clone = false; 
@@ -20,32 +19,26 @@ public class CloneObjectController : MonoBehaviour
 
     void Update()
     {
+        m_Object.SetActive(false);
+
         if (m_Clone)
         {
-            m_Object.SetActive(true);
-
-            Vector3 l_Offset = m_MirrorPortal.transform.position - transform.position;
-            l_Offset.Normalize();
-
-            if(Vector3.Dot(l_Offset, m_MirrorPortal.transform.forward) >0)
-            {
-               // this.gameObject.SetActive(true);
-            }
-
-            Vector3 l_Postion = m_Teleportable.transform.position; 
-            Vector3 l_LocalPosition = m_PortalTransform.transform.InverseTransformPoint(l_Postion); 
-            Vector3 l_WorldPosition = m_MirrorPortal.transform.TransformPoint(l_LocalPosition); 
+            Vector3 l_Postion = m_Teleportable.transform.position;
+            Vector3 l_LocalPosition = m_PortalTransform.transform.InverseTransformPoint(l_Postion);
+            Vector3 l_WorldPosition = m_MirrorPortal.transform.TransformPoint(l_LocalPosition);
 
             Vector3 l_Forward = m_Teleportable.transform.forward;
             Vector3 l_LocalForward = m_PortalTransform.transform.InverseTransformDirection(l_Forward);
-            Vector3 l_WorldFoward = m_MirrorPortal.transform.TransformDirection(l_LocalForward);   
-            
+            Vector3 l_WorldFoward = m_MirrorPortal.transform.TransformDirection(l_LocalForward);
+
             transform.position = l_WorldPosition;
             transform.forward = l_WorldFoward;
+            m_Object.SetActive(true);
+
         }
         else
         {
-           m_Object.SetActive(false);
+            m_Object.SetActive(false);
         }
     }
 
@@ -55,6 +48,7 @@ public class CloneObjectController : MonoBehaviour
         m_Teleportable = l_teleportableObject;  
         m_PortalTransform = l_PortalTransform;
         transform.localScale = m_StartSize * l_mirrorPortal.m_PortalSize; 
+
         m_Clone=true;   
     }
 }

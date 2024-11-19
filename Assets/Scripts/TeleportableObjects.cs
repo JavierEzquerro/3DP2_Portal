@@ -5,6 +5,7 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class TeleportableObjects : MonoBehaviour, ITeleport
 {
+    public LayerMask m_LayerMask; 
     public BoxCollider m_BoxCollider;
     public Rigidbody m_Rigidbody;
     public Portal m_Portal;
@@ -14,6 +15,7 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
     public bool m_Catched;
     private int m_LayerMaskWeapon;
     private Player_Controller m_Player; 
+    
 
     public virtual void Start()
     {
@@ -42,7 +44,7 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
             Vector3 l_Offset = m_Portal.transform.position - transform.position;
             float l_Dot = Vector3.Dot(m_Portal.transform.forward, l_Offset.normalized);
 
-            if (l_Dot > 0.0f && !m_Catched)
+            if (l_Dot > 0.5f && !m_Catched)
             {
                 Teleport(m_Portal);
                 m_EnterPortal = false;
@@ -52,22 +54,20 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
         if (m_Catched)
         {
             ChangeLayer(m_LayerMaskWeapon);
-            /*
              
-                Vector3 l_Direction = m_Player.transform.position - transform.position;
-                Ray l_ray = new Ray(transform.position, l_Direction);
+            Vector3 l_Direction = m_Player.transform.position - transform.position;
+            Ray l_ray = new Ray(transform.position, l_Direction);
 
-                if (Physics.Raycast(l_ray, out RaycastHit l_Hit))
+            if (Physics.Raycast(l_ray, out RaycastHit l_Hit, m_LayerMask.value))
+            {
+                if (l_Hit.collider.CompareTag("Player") || m_EnterPortal)
                 {
-                    if (l_Hit.collider.CompareTag("Player"))
-                    {
-                        ChangeLayer(m_LayerMaskWeapon);
-                    }
-                    else
-                        ChangeLayer(0);
+                    ChangeLayer(m_LayerMaskWeapon);
                 }
-             
-             */
+                else
+                    ChangeLayer(0);
+            }
+
         }        
         else
             ChangeLayer(0);
@@ -77,6 +77,8 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
 
     public void Teleport(Portal l_portal)
     {
+        float l_Velocity = m_Rigidbody.velocity.magnitude;
+    
         Vector3 l_Position = transform.position;
         Vector3 l_LocalPosition = l_portal.m_OtherPortalTransform.InverseTransformPoint(l_Position);
         Vector3 l_WorldPosition = l_portal.m_MirrorPortal.transform.TransformPoint(l_LocalPosition);
@@ -84,9 +86,11 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
         Vector3 l_LocalForward = l_portal.m_OtherPortalTransform.InverseTransformDirection(transform.forward);
         Vector3 l_WorldForward = l_portal.m_MirrorPortal.transform.TransformDirection(l_LocalForward);
 
+        l_portal.CloneObject(this.gameObject, l_portal.m_MirrorPortal);
         transform.position = l_WorldPosition;
         transform.forward = l_WorldForward;
-        m_Rigidbody.velocity = l_WorldForward * m_Rigidbody.velocity.magnitude *1.5f;
+
+        m_Rigidbody.velocity = l_portal.m_MirrorPortal.transform.forward * l_Velocity;
         transform.localScale = m_StartSize * l_portal.m_MirrorPortal.m_PortalSize;
         Physics.IgnoreCollision(m_Portal.m_WallPortaled, m_BoxCollider, false);
     }
@@ -105,7 +109,6 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
         {
             m_Portal = other.GetComponent<Portal>();
             m_EnterPortal = true;
-
             Physics.IgnoreCollision(m_Portal.m_WallPortaled, m_BoxCollider, true);
         }
     }

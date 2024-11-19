@@ -16,18 +16,18 @@ public class WindowPortalController : MonoBehaviour
     {
         if (other.CompareTag("CompanionCube"))
         {
-            m_Portal.CloneObject(other.gameObject); 
+            m_Portal.CloneObject(other.gameObject, m_Portal.m_MirrorPortal);  
         }
         else if (other.CompareTag("Weapon"))
         {
-            m_Portal.CloneObject(other.gameObject);
+            m_Portal.CloneObject(other.gameObject, m_Portal.m_MirrorPortal);
         }
         else if (other.CompareTag("Turret"))
         {
-            m_Portal.CloneObject(other.gameObject);
+            m_Portal.CloneObject(other.gameObject, m_Portal.m_MirrorPortal);
         }
     }
-
+    
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("CompanionCube"))

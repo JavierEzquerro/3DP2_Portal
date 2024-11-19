@@ -28,7 +28,13 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
     [SerializeField] private float m_ThresholdPortal;
     [SerializeField] private GameObject m_CrossHairBlue;
     [SerializeField] private GameObject m_CrossHairOrange;
+    [SerializeField] private GameObject m_CrossHairNoValidPosition;
     [SerializeField] private float m_ForceLaunch;
+    [SerializeField] private LayerMask m_LayerMask;
+    [SerializeField] private ParticleSystem m_AttractParticleSystem;
+    [SerializeField] private ParticleSystem m_ReppeleParticleSystem;
+    [SerializeField] private ParticleSystem m_FallParticleSystem;
+
     public GameObject m_ObjectAttract;
     private Transform m_AttachedPreviousParent;
     public Transform m_AttractPoint;
@@ -65,6 +71,7 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
 
         m_CrossHairBlue.SetActive(false);
         m_CrossHairOrange.SetActive(false);
+        m_CrossHairNoValidPosition.SetActive(false);
 
         m_Angle = Mathf.Cos(m_AngleValidPortal * Mathf.Deg2Rad);
         m_PlayerController = GetComponent<Player_Controller>();
@@ -117,6 +124,9 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
                     //PREVIEW
                     if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
                     {
+                        if(!IsValidPosition())
+                            m_CrossHairNoValidPosition.SetActive(true);
+
                         if (Input.GetMouseButton(0))
                         {
                             m_BluePreviewPortal.SetActive(true);
@@ -157,6 +167,9 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
                         SoundsManager.instance.PlaySoundClip(m_OrangePortalSound, transform, 0.05f);
                         m_CanShootOrange = false;
                     }
+
+                    m_CrossHairNoValidPosition.SetActive(false);
+
                 }
                 else
                 {
@@ -165,12 +178,23 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
                 }
             }
 
+            if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
+            {
+                if (!IsValidPosition())
+                    m_CrossHairNoValidPosition.SetActive(true);
+            }
+
+            if(Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1))
+                    m_CrossHairNoValidPosition.SetActive(false);
+
+
             //ATTRACT OBJECTS
             if (l_hit.collider.CompareTag("CompanionCube") || l_hit.collider.CompareTag("Turret") || l_hit.collider.CompareTag("RefractionCube"))
             {
                 if (Input.GetMouseButtonDown(0) && !m_TrapedObject && !m_AttractingObjects)
                 {
                     AttractObject(l_hit);
+                    m_AttractParticleSystem.Play();
                 }
             }
         }
@@ -197,6 +221,7 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
 
         if (Input.GetMouseButtonDown(0) && m_TrapedObject)
         {
+            m_ReppeleParticleSystem.Play();
             m_RbObjectAttract.isKinematic = false;
             m_ObjectAttract.transform.SetParent(m_AttachedPreviousParent);
             TeleportableObjects l_TeleportableObjects = m_ObjectAttract.GetComponent<TeleportableObjects>();
@@ -208,6 +233,7 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
         }
         else if (Input.GetMouseButtonDown(1) && m_TrapedObject)
         {
+            m_FallParticleSystem.Play();    
             m_RbObjectAttract.isKinematic = false;
             m_ObjectAttract.transform.SetParent(m_AttachedPreviousParent);
             TeleportableObjects l_TeleportableObjects = m_ObjectAttract.GetComponent<TeleportableObjects>();
@@ -301,7 +327,7 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
         {
             Vector3 l_Diretion = m_ValidPoints[i].transform.position - m_Camera.transform.position;
 
-            if (Physics.Raycast(l_CameraPosition, l_Diretion, out l_hit, m_DistanceRay, ~0, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(l_CameraPosition, l_Diretion, out l_hit, m_DistanceRay))
             {
                 float l_Dotangle = Vector3.Dot(l_hit.normal, m_ValidPoints[i].forward);
 

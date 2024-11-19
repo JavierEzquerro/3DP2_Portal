@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class CompanionController : TeleportableObjects
 {
-    public static Action OnCubeDestroyed;
+    public static Action OnCubeDestroyed; 
 
     public override void Update()
     {

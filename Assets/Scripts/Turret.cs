@@ -10,7 +10,6 @@ public class Turret : TeleportableObjects, IRestartGame
     private Quaternion m_StartRotation;
 
     public LineRenderer m_LaserRenderer;
-    public LayerMask m_LayerMask;
     public float m_MaxDistance = 50.0f;
     private bool m_IsDying = false;
 

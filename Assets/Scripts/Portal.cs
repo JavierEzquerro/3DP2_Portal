@@ -130,7 +130,7 @@ public class Portal : MonoBehaviour
         }
     }
 
-    public void CloneObject(GameObject l_Object)
+    public void CloneObject(GameObject l_Object, Portal l_Mirror)
     {
         TeleportableObjects l_TeleportableObject = l_Object.GetComponent<TeleportableObjects>();
         CloneObjectController l_Controller = null;  
@@ -152,4 +152,21 @@ public class Portal : MonoBehaviour
         l_Controller.TeleportObjectClone(l_TeleportableObject, m_MirrorPortal, m_OtherPortalTransform);
 
     }
+
+    public void DesactiveObject(GameObject l_Object)
+    {
+        if (l_Object.CompareTag("CompanionCube"))
+        {
+            m_Cube.SetActive(false);
+        }
+        else if (l_Object.CompareTag("Turret"))
+        {
+            m_Turret.SetActive(false);
+        }
+        else if (l_Object.CompareTag("Weapon"))
+        {
+            m_Gun.SetActive(false);  
+        }
+    }
 } 
+
