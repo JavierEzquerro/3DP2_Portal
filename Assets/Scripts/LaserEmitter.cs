@@ -2,12 +2,11 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class LaserEmitter : TeleportableObjects
+public class LaserEmitter : MonoBehaviour
 {
     [SerializeField] private LineRenderer m_LaserRenderer;
     [SerializeField] private AudioClip m_LaserSound;
     [SerializeField] private float m_LaserDistance = 8f;
-    [SerializeField] private LayerMask m_LayerMask;
 
     private bool m_LaserActive = true;
     private bool m_SoundPlayed = false;
@@ -17,10 +16,8 @@ public class LaserEmitter : TeleportableObjects
         m_LaserRenderer.positionCount = 2;
     }
 
-    public override void Update()
+    public void Update()
     {
-        base.Update();
-        
         if (!m_LaserActive)
         {
             m_LaserRenderer.enabled = false;
@@ -58,8 +55,8 @@ public class LaserEmitter : TeleportableObjects
             }
             else if (l_RayHit.collider.CompareTag("Portal"))
             {
-                m_Portal = l_RayHit.collider.GetComponent<Portal>();
-                m_Portal.RayReflection(l_Ray, l_RayHit);
+                Portal l_Portal = l_RayHit.collider.GetComponent<Portal>();
+                l_Portal.RayReflection(l_Ray, l_RayHit);
             }
         }
         else

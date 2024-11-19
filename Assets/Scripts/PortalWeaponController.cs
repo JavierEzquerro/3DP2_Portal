@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PortalWeaponController : MonoBehaviour, IRestartGame
+public class PortalWeaponController : MonoBehaviour, IRestartGame 
 {
     [Header("Portal")]
     [SerializeField] private Camera m_Camera;
@@ -12,7 +12,6 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
     [SerializeField] private float m_AngleValidPortal;
     [SerializeField] private float m_ScrollWheelIncrement;
     public List<Transform> m_ValidPoints = new List<Transform>();
-    private Player_Controller m_PlayerController;
     private CharacterController m_CharacterController;
     private RaycastHit m_HitCollisoned;
     private Vector3 m_StartScale;
@@ -70,11 +69,10 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
         m_PreviewAnimation = 0.0f;
 
         m_CrossHairBlue.SetActive(false);
-        m_CrossHairOrange.SetActive(false);
+        m_CrossHairOrange.SetActive(false); 
         m_CrossHairNoValidPosition.SetActive(false);
 
         m_Angle = Mathf.Cos(m_AngleValidPortal * Mathf.Deg2Rad);
-        m_PlayerController = GetComponent<Player_Controller>();
         m_CharacterController = GetComponent<CharacterController>();
 
         //BULLET PORTAL
@@ -109,7 +107,7 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
         PreviewPortalAnimation();
         m_ReSize = Mathf.Clamp(m_ReSize, -1, 1);
 
-        if (Physics.Raycast(l_Ray.origin, l_Ray.direction, out l_hit, m_DistanceRay, ~0, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(l_Ray.origin, l_Ray.direction, out l_hit, m_DistanceRay, m_LayerMask.value))
         {
             if (!m_AttractingObjects && !m_TrapedObject)
             {
@@ -327,7 +325,7 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
         {
             Vector3 l_Diretion = m_ValidPoints[i].transform.position - m_Camera.transform.position;
 
-            if (Physics.Raycast(l_CameraPosition, l_Diretion, out l_hit, m_DistanceRay))
+            if (Physics.Raycast(l_CameraPosition, l_Diretion, out l_hit, m_DistanceRay, m_LayerMask.value))
             {
                 float l_Dotangle = Vector3.Dot(l_hit.normal, m_ValidPoints[i].forward);
 

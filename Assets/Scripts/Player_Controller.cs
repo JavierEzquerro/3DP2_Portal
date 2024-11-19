@@ -8,7 +8,7 @@ using UnityEngine;
 public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
 {
     private CharacterController m_CharacterController;
-    private PortalWeaponController m_PortalWeaponController;
+    private PortalWeaponController m_PortalWeaponController; 
     // private Animator m_Animator; 
     public Transform m_PitchController;
     private float m_Yaw;
@@ -183,7 +183,7 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
         else if (m_AddPortalPhysics)
         {
             m_CurrentVelocity.y += Physics.gravity.y * Time.deltaTime * m_GravityForce;
-            m_CharacterController.Move(m_CurrentVelocity * Time.deltaTime);
+            m_CharacterController.Move(m_CurrentVelocity * Time.deltaTime); 
         }
         else
         {
@@ -192,7 +192,7 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
             l_MovementDirection.y = m_verticalSpeed * Time.deltaTime;
         }
 
-        CollisionFlags l_CollisionFlags = m_CharacterController.Move(l_MovementDirection);
+        CollisionFlags l_CollisionFlags = m_CharacterController.Move(l_MovementDirection);  
 
         if ((l_CollisionFlags & CollisionFlags.Below) != 0 && !m_GravityZone)
         {
@@ -219,11 +219,6 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
                 m_EnterPortal = false;
             }
         }
-
-        if (Input.GetKey(KeyCode.T))
-            Time.timeScale = 0.05f;
-        else
-            Time.timeScale = 1.0f;
     }
 
     private void DetectSurface()
@@ -281,6 +276,8 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
     {
         transform.position = m_StartPosition;
         transform.rotation = m_StartRotation;
+        m_AddPortalPhysics = false; 
+        m_MovementDirection = Vector3.zero;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -376,17 +373,13 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
         Vector3 l_LocalForward = l_portal.m_OtherPortalTransform.InverseTransformDirection(l_Forward);
         Vector3 l_WorldForward = l_portal.m_MirrorPortal.transform.TransformDirection(l_LocalForward);
 
-        SoundsManager.instance.PlaySoundClip(m_EnterPortalSound, transform, 0.1f);
+        SoundsManager.instance.PlaySoundClip(m_EnterPortalSound, transform, 0.1f); 
         m_CharacterController.enabled = false;
         transform.position = l_WorldPosition;
         transform.forward = l_WorldForward;
 
         if(l_DotMirrorPortalToVectorUp <= 0.1f || l_DotPortalToVectorUp <=0.1f)
             m_Yaw = transform.eulerAngles.y;
-
-        Debug.Log("Yaw: " + m_Yaw);
-        Debug.Log("Pitch: " + m_Pitch);
-        Debug.Log("Camera Rotation: " + l_portal.m_Camera.transform.rotation.x * Mathf.Rad2Deg);
 
         m_CharacterController.enabled = true;
         SoundsManager.instance.PlaySoundClip(m_ExitPortalSound, transform, 0.1f);
@@ -418,7 +411,8 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
             m_HasBounced = false;
         }
 
-        if (collision.collider.CompareTag("WhiteWall") && m_AddPortalPhysics)
+        if ((collision.collider.CompareTag("WhiteWall") || (collision.collider.CompareTag("Wall") 
+            && m_AddPortalPhysics)))
         {
             m_AddPortalPhysics = false;
         }

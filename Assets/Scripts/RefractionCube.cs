@@ -3,10 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RefractionCube : TeleportableObjects
+public class RefractionCube : TeleportableObjects 
 {
     public LineRenderer m_LaserRenderer;
-    public LayerMask m_LayerMask;
     public float m_MaxDistance = 50.0f;
     private bool m_CreateRefraction = false;
 
@@ -50,6 +49,12 @@ public class RefractionCube : TeleportableObjects
             else if (l_HitInfo.collider.CompareTag("LaserReceiver"))
             {
                 OnLaserReceived?.Invoke();
+            }
+            else if (l_HitInfo.collider.CompareTag("Portal"))
+            {
+                m_Portal = l_HitInfo.collider.GetComponent<Portal>();
+                m_LaserRenderer.SetPosition(1, new Vector3(0, 0, l_HitInfo.distance + Vector3.Distance(l_HitInfo.point, m_Portal.transform.position) + 0.5f));
+                m_Portal.RayReflection(l_Ray, l_HitInfo);
             }
 
         }
