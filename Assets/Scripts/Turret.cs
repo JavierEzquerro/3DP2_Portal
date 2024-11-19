@@ -20,7 +20,6 @@ public class Turret : TeleportableObjects, IRestartGame
     [Header("Particles")]
     [SerializeField] private ParticleSystem m_TurretExplosionParticles;
 
-    public static Action OnLaserReceived;
     public static Action<float> OnPlayerDamagedByLaser;
     public static Action OnPlayerNotDamagedByLaser;
 
@@ -58,17 +57,13 @@ public class Turret : TeleportableObjects, IRestartGame
                     }
 
                     Turret l_Turret = l_HitInfo.collider.GetComponent<Turret>();
-                    StartCoroutine(TurretDeathCoroutine(l_Turret, l_HitInfo.collider.gameObject));
+                    StartCoroutine(l_Turret.TurretDeathCoroutine(l_Turret, l_HitInfo.collider.gameObject));
                 }
                 else if (l_HitInfo.collider.CompareTag("Portal"))
                 {
                     m_Portal = l_HitInfo.collider.GetComponent<Portal>();
                     m_LaserRenderer.SetPosition(1, new Vector3(0, 0, l_HitInfo.distance + Vector3.Distance(l_HitInfo.point, m_Portal.transform.position) + 0.5f));
                     m_Portal.RayReflection(l_Ray, l_HitInfo);
-                }
-                else if (l_HitInfo.collider.CompareTag("LaserReceiver"))
-                {
-                    OnLaserReceived?.Invoke();
                 }
                 else if (l_HitInfo.collider.CompareTag("Player") && l_HitInfo.collider.TryGetComponent(out PlayerLifeController l_PlayerLifeController))
                 {

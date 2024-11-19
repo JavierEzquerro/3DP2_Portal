@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
 
     public bool m_Restart;
     private bool m_GameHasEnded = false;
+    private bool m_CoroutineStarted = false;
     private bool m_PlayerBeingDamagedThisFrame = false;
     private float m_TotalDamagePerSecond = 0f;
 
@@ -125,13 +126,14 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator PlayerActive()
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(1f);
         m_CharacterController.enabled = true;
         m_PlayerController.enabled = true;
         m_PortalWeaponController.enabled = true;
         m_PortalWeaponAnimator.enabled = true;
         m_PlayerController.SetSpeed();
         m_Restart = false;
+        m_CoroutineStarted = false;
     }
 
     public void NewGame()
@@ -149,7 +151,11 @@ public class GameManager : MonoBehaviour
             SceneManager.LoadSceneAsync("MainMenu");
         }
 
-        m_FadeController.StartFade();
+        if (m_CoroutineStarted == false)
+        {
+            m_FadeController.StartFade();
+            m_CoroutineStarted = true;
+        }
     }
 
     public void ExitGame()

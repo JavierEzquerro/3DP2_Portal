@@ -7,19 +7,17 @@ public class LaserReceiver : MonoBehaviour
 
     private void OnEnable()
     {
-        Turret.OnLaserReceived += LaserReceived;
         RefractionCube.OnLaserReceived += LaserReceived;
         Portal.OnLaserReceived += LaserReceived;
     }
 
     private void OnDisable()
     {
-        Turret.OnLaserReceived -= LaserReceived;
         RefractionCube.OnLaserReceived -= LaserReceived;
         Portal.OnLaserReceived -= LaserReceived;
     }
 
-    private void Start()
+    private void Awake()
     {
         gameObject.SetActive(true);
     }

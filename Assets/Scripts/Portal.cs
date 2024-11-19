@@ -101,8 +101,8 @@ public class Portal : MonoBehaviour
             }
             else if (l_HitInfo.collider.CompareTag("Turret"))
             {
-                //Animacion
-                Destroy(l_HitInfo.collider.gameObject);
+                Turret l_Turret = l_HitInfo.collider.GetComponent<Turret>();
+                StartCoroutine(l_Turret.TurretDeathCoroutine(l_Turret, l_HitInfo.collider.gameObject));
             }
             else if (l_HitInfo.collider.CompareTag("Player") && l_HitInfo.collider.TryGetComponent(out PlayerLifeController l_PlayerLifeController))
             {

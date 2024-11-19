@@ -21,7 +21,6 @@ public class PlayerLifeController : MonoBehaviour, IRestartGame
 
     private float m_DamageTimer = 0f;
     private float m_HealTimer = 0f;
-
     private bool m_Death = false;
 
     public bool m_HitSoundPlayed = false;
