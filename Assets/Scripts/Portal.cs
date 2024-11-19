@@ -8,9 +8,7 @@ public class Portal : MonoBehaviour
 {
     [SerializeField] private float m_OffsetCamera; 
     [SerializeField] private float m_SpeedAnimation;
-    [SerializeField] private List<GameObject> m_ObjectsCanClone;
 
-    private List<GameObject> m_ObjectsToClone;
     public Transform m_OtherPortalTransform;
     public Portal m_MirrorPortal;
     public Camera m_Camera;
@@ -28,6 +26,12 @@ public class Portal : MonoBehaviour
     private RaycastHit m_RaycastHitLaser;
     public float m_LaserOffset;
 
+    [Header("CloneObjects")]
+    public GameObject m_Gun;
+    public GameObject m_Cube;
+    public GameObject m_Turret; 
+    private WindowPortalController m_WindowPortalController;
+
     public static Action OnLaserReceived;
 
     private void Start()
@@ -37,6 +41,7 @@ public class Portal : MonoBehaviour
         m_PortalAnimation = false;
         m_AnimationProgress = 0f;
         m_LaserRenderer.gameObject.SetActive(false);
+        m_WindowPortalController = GetComponentInChildren<WindowPortalController>();
     }
 
     private void Update()
@@ -118,7 +123,7 @@ public class Portal : MonoBehaviour
     public void PortalAnimation()
     {
         Vector3 l_Size = m_StartSizePortal * m_PortalSize;
-        m_AnimationProgress += m_SpeedAnimation * Time.deltaTime;  
+        m_AnimationProgress += m_SpeedAnimation * Time.deltaTime;
 
         transform.localScale = Vector3.Lerp(m_StartSizeAnimation, l_Size, m_AnimationProgress);
 
@@ -127,7 +132,30 @@ public class Portal : MonoBehaviour
         if (m_AnimationProgress >= 1f)
         {
             m_PortalAnimation = false;
-            m_AnimationProgress = 0f;  
+            m_AnimationProgress = 0f;
         }
+    }
+
+    public void CloneObject(GameObject l_Object)
+    {
+        TeleportableObjects l_TeleportableObject = l_Object.GetComponent<TeleportableObjects>();
+        CloneObjectController l_Controller = null;  
+
+        if (l_Object.CompareTag("CompanionCube"))
+        {
+            l_Controller = m_Cube.GetComponent<CloneObjectController>(); 
+        }
+        else if (l_Object.CompareTag("Turret"))
+        {
+            l_Controller = m_Turret.GetComponent<CloneObjectController>();
+        }
+        else if (l_Object.CompareTag("Weapon"))
+        {
+            l_Controller = m_Gun.GetComponent<CloneObjectController>(); 
+        }
+
+        m_WindowPortalController.SetCloneObject(l_Controller);
+        l_Controller.TeleportObjectClone(l_TeleportableObject, m_MirrorPortal, m_OtherPortalTransform);
+
     }
 } 

@@ -56,7 +56,6 @@ public class Turret : TeleportableObjects, IRestartGame
                     if (m_Portal != null)
                     {
                         m_Portal.m_LaserEnabled = false;
-                        Debug.Log("No laser");
                     }
 
                     Turret l_Turret = l_HitInfo.collider.GetComponent<Turret>();

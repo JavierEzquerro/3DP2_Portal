@@ -12,10 +12,12 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
     public Vector3 m_StartSize;
     public bool m_EnterPortal;
     public bool m_Catched;
-    private int m_LayerMaskWeapon; 
+    private int m_LayerMaskWeapon;
+    private Player_Controller m_Player; 
 
     public virtual void Start()
     {
+        m_Player = GameManager.instance.GetPlayer();
         m_Rigidbody = GetComponent<Rigidbody>();
         m_BoxCollider = GetComponent<BoxCollider>();
         m_StartSize = transform.localScale;
@@ -40,18 +42,37 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
             Vector3 l_Offset = m_Portal.transform.position - transform.position;
             float l_Dot = Vector3.Dot(m_Portal.transform.forward, l_Offset.normalized);
 
-            if (l_Dot > -0.002 && !m_Catched)
+            if (l_Dot > 0.0f && !m_Catched)
             {
                 Teleport(m_Portal);
-                Debug.Log("Teleport");
                 m_EnterPortal = false;
             }
         }
 
-        if (m_Catched)        
-            ChangeLayer(m_LayerMaskWeapon); 
+        if (m_Catched)
+        {
+            ChangeLayer(m_LayerMaskWeapon);
+            /*
+             
+                Vector3 l_Direction = m_Player.transform.position - transform.position;
+                Ray l_ray = new Ray(transform.position, l_Direction);
+
+                if (Physics.Raycast(l_ray, out RaycastHit l_Hit))
+                {
+                    if (l_Hit.collider.CompareTag("Player"))
+                    {
+                        ChangeLayer(m_LayerMaskWeapon);
+                    }
+                    else
+                        ChangeLayer(0);
+                }
+             
+             */
+        }        
         else
             ChangeLayer(0);
+
+     
     }
 
     public void Teleport(Portal l_portal)
@@ -65,7 +86,7 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
 
         transform.position = l_WorldPosition;
         transform.forward = l_WorldForward;
-        m_Rigidbody.velocity = l_WorldForward * m_Rigidbody.velocity.magnitude;
+        m_Rigidbody.velocity = l_WorldForward * m_Rigidbody.velocity.magnitude *1.5f;
         transform.localScale = m_StartSize * l_portal.m_MirrorPortal.m_PortalSize;
         Physics.IgnoreCollision(m_Portal.m_WallPortaled, m_BoxCollider, false);
     }
@@ -84,7 +105,16 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
         {
             m_Portal = other.GetComponent<Portal>();
             m_EnterPortal = true;
+
             Physics.IgnoreCollision(m_Portal.m_WallPortaled, m_BoxCollider, true);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Portal"))
+        {
+            Physics.IgnoreCollision(m_Portal.m_WallPortaled, m_BoxCollider, false);
         }
     }
 }

@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 5410044178206360360}
   - component: {fileID: 5435248062236916235}
   - component: {fileID: 6200114190360138411}
-  - component: {fileID: 531156884452081842}
-  - component: {fileID: 8659974967434326779}
+  - component: {fileID: 5419863840085414926}
+  - component: {fileID: 5931034127639743256}
   m_Layer: 3
   m_Name: Window
   m_TagString: Untagged
@@ -85,8 +85,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &531156884452081842
-MeshCollider:
+--- !u!65 &5419863840085414926
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -103,11 +103,10 @@ MeshCollider:
   m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &8659974967434326779
+  serializedVersion: 3
+  m_Size: {x: 1.0000001, y: 2.9322298, z: 1.0000005}
+  m_Center: {x: 0.000000052975253, y: 0.55611414, z: -0.00000008829206}
+--- !u!114 &5931034127639743256
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -116,9 +115,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 904738107123081711}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c30ba207ede30344bc8f32379a48624, type: 3}
+  m_Script: {fileID: 11500000, guid: c5ceb2db333d62a44a15a742719edd34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Portal: {fileID: 1360376697965872961}
 --- !u!1 &1118372592915312811
 GameObject:
   m_ObjectHideFlags: 0
@@ -367,7 +367,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
   m_LocalPosition: {x: 15.5, y: 1.5, z: 19.94}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.6, y: 1.6, z: 1.6}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5410044178206360360}
@@ -391,11 +391,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_OffsetCamera: 0.9
   m_SpeedAnimation: 2
-  m_ObjectsCanClone:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   m_OtherPortalTransform: {fileID: 438421046736084437}
   m_MirrorPortal: {fileID: 0}
   m_Camera: {fileID: 8567377526475811930}
@@ -409,6 +404,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 55
   m_LaserOffset: 1
+  m_Gun: {fileID: 0}
+  m_Cube: {fileID: 0}
+  m_Turret: {fileID: 0}
 --- !u!136 &8562300489750585290
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -428,7 +426,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.67
+  m_Radius: 0.8
   m_Height: 2.12
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}

@@ -59,7 +59,7 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
         m_TrapedObject = false;
 
         m_ReSize = 0;
-        m_StartScale = Vector3.one;
+        m_StartScale = m_BluePreviewPortal.transform.localScale;
         m_CurrentPortalSize = m_ReSize;
         m_PreviewAnimation = 0.0f;
 
@@ -86,6 +86,22 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
         RaycastHit l_hit;
         Ray l_Ray = m_Camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
+        float l_ScrollWheel = Input.GetAxis("Mouse ScrollWheel");
+
+        if (l_ScrollWheel > 0)
+        {
+            m_ReSize += 1;
+            m_PreviewAnimation = 0;
+        }
+        else if (l_ScrollWheel < 0)
+        {
+            m_ReSize -= 1;
+            m_PreviewAnimation = 0;
+        }
+
+        PreviewPortalAnimation();
+        m_ReSize = Mathf.Clamp(m_ReSize, -1, 1);
+
         if (Physics.Raycast(l_Ray.origin, l_Ray.direction, out l_hit, m_DistanceRay, ~0, QueryTriggerInteraction.Ignore))
         {
             if (!m_AttractingObjects && !m_TrapedObject)
@@ -101,23 +117,6 @@ public class PortalWeaponController : MonoBehaviour, IRestartGame
                     //PREVIEW
                     if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
                     {
-                        float l_ScrollWheel = Input.GetAxis("Mouse ScrollWheel");
-
-                        if (l_ScrollWheel > 0)
-                        {
-                            m_ReSize += 1;
-                            m_PreviewAnimation = 0;
-                        }
-                        else if (l_ScrollWheel < 0)
-                        {
-                            m_ReSize -= 1;
-                            m_PreviewAnimation = 0;
-                        }
-
-                        PreviewPortalAnimation();
-
-                        m_ReSize = Mathf.Clamp(m_ReSize, -1, 1);
-
                         if (Input.GetMouseButton(0))
                         {
                             m_BluePreviewPortal.SetActive(true);
