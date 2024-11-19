@@ -381,9 +381,13 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
         transform.position = l_WorldPosition;
         transform.forward = l_WorldForward;
 
-        if(l_DotMirrorPortalToVectorUp <= 0.1f)
+        if(l_DotMirrorPortalToVectorUp <= 0.1f || l_DotPortalToVectorUp <=0.1f)
             m_Yaw = transform.eulerAngles.y;
-        
+
+        Debug.Log("Yaw: " + m_Yaw);
+        Debug.Log("Pitch: " + m_Pitch);
+        Debug.Log("Camera Rotation: " + l_portal.m_Camera.transform.rotation.x * Mathf.Rad2Deg);
+
         m_CharacterController.enabled = true;
         SoundsManager.instance.PlaySoundClip(m_ExitPortalSound, transform, 0.1f);
         Physics.IgnoreCollision(m_CharacterController, m_Portal.m_WallPortaled, false);

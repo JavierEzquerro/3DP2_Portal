@@ -36,10 +36,6 @@ public class CloneObjectController : MonoBehaviour
             m_Object.SetActive(true);
 
         }
-        else
-        {
-            m_Object.SetActive(false);
-        }
     }
 
     public void TeleportObjectClone(TeleportableObjects l_teleportableObject, Portal l_mirrorPortal, Transform l_PortalTransform)

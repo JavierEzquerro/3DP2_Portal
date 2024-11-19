@@ -5,7 +5,7 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class TeleportableObjects : MonoBehaviour, ITeleport
 {
-    public LayerMask m_LayerMask; 
+    public LayerMask m_LayerMask;
     public BoxCollider m_BoxCollider;
     public Rigidbody m_Rigidbody;
     public Portal m_Portal;
@@ -14,8 +14,8 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
     public bool m_EnterPortal;
     public bool m_Catched;
     private int m_LayerMaskWeapon;
-    private Player_Controller m_Player; 
-    
+    private Player_Controller m_Player;
+
 
     public virtual void Start()
     {
@@ -23,7 +23,7 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
         m_Rigidbody = GetComponent<Rigidbody>();
         m_BoxCollider = GetComponent<BoxCollider>();
         m_StartSize = transform.localScale;
-        m_LayerMaskWeapon = LayerMask.NameToLayer("Weapon"); 
+        m_LayerMaskWeapon = LayerMask.NameToLayer("Weapon");
     }
 
     public virtual void FixedUpdate()
@@ -54,7 +54,7 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
         if (m_Catched)
         {
             ChangeLayer(m_LayerMaskWeapon);
-             
+
             Vector3 l_Direction = m_Player.transform.position - transform.position;
             Ray l_ray = new Ray(transform.position, l_Direction);
 
@@ -68,17 +68,24 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
                     ChangeLayer(0);
             }
 
-        }        
+        }
         else
+        {
             ChangeLayer(0);
 
-     
+            if (!m_EnterPortal)
+            {
+                if (m_Portal != null)
+                    Physics.IgnoreCollision(m_Portal.m_WallPortaled, m_BoxCollider, false);
+            }
+        }
     }
 
     public void Teleport(Portal l_portal)
     {
         float l_Velocity = m_Rigidbody.velocity.magnitude;
-    
+        l_portal.m_MirrorPortal.CloneObject(this.gameObject, l_portal);
+
         Vector3 l_Position = transform.position;
         Vector3 l_LocalPosition = l_portal.m_OtherPortalTransform.InverseTransformPoint(l_Position);
         Vector3 l_WorldPosition = l_portal.m_MirrorPortal.transform.TransformPoint(l_LocalPosition);
@@ -86,9 +93,9 @@ public class TeleportableObjects : MonoBehaviour, ITeleport
         Vector3 l_LocalForward = l_portal.m_OtherPortalTransform.InverseTransformDirection(transform.forward);
         Vector3 l_WorldForward = l_portal.m_MirrorPortal.transform.TransformDirection(l_LocalForward);
 
-        l_portal.CloneObject(this.gameObject, l_portal.m_MirrorPortal);
         transform.position = l_WorldPosition;
         transform.forward = l_WorldForward;
+
 
         m_Rigidbody.velocity = l_portal.m_MirrorPortal.transform.forward * l_Velocity;
         transform.localScale = m_StartSize * l_portal.m_MirrorPortal.m_PortalSize;
