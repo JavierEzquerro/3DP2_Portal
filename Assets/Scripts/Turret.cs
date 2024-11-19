@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class Turret : TeleportableObjects, IRestartGame
@@ -11,11 +12,15 @@ public class Turret : TeleportableObjects, IRestartGame
     public LineRenderer m_LaserRenderer;
     public LayerMask m_LayerMask;
     public float m_MaxDistance = 50.0f;
+    private bool m_IsDying = false;
 
     [Header("Sounds")]
     [SerializeField] private AudioClip m_TurretDeathSound;
+    [SerializeField] private AudioClip m_ExplosionSound;
 
-    public static bool m_IsPlayerBeingHit = false;
+    [Header("Particles")]
+    [SerializeField] private ParticleSystem m_TurretExplosionParticles;
+
     public static Action OnLaserReceived;
     public static Action<float> OnPlayerDamagedByLaser;
     public static Action OnPlayerNotDamagedByLaser;
@@ -23,7 +28,7 @@ public class Turret : TeleportableObjects, IRestartGame
     public override void Start()
     {
         base.Start();
-        GameManager.instance.AddTurretToRestart(this);
+        GameManager.instance.AddRestartGame(this);
         m_StartPosition = transform.position;
         m_StartRotation = transform.rotation;
     }
@@ -43,8 +48,7 @@ public class Turret : TeleportableObjects, IRestartGame
 
                 if (l_HitInfo.collider.CompareTag("RefractionCube"))
                 {
-                    m_LaserRenderer.SetPosition(1, new Vector3(0, 0, l_HitInfo.distance));
-                    m_LaserRenderer.gameObject.SetActive(true);
+                    l_HitInfo.collider.GetComponent<RefractionCube>().CreateRefraction();
                 }
                 else if (l_HitInfo.collider.CompareTag("Turret"))
                 {
@@ -53,8 +57,9 @@ public class Turret : TeleportableObjects, IRestartGame
                     {
                         m_Portal.m_LaserEnabled = false;
                     }
-                    SoundsManager.instance.PlaySoundClip(m_TurretDeathSound, transform, 0.2f);
-                    Destroy(l_HitInfo.collider.gameObject);
+
+                    Turret l_Turret = l_HitInfo.collider.GetComponent<Turret>();
+                    StartCoroutine(TurretDeathCoroutine(l_Turret, l_HitInfo.collider.gameObject));
                 }
                 else if (l_HitInfo.collider.CompareTag("Portal"))
                 {
@@ -65,6 +70,7 @@ public class Turret : TeleportableObjects, IRestartGame
                 else if (l_HitInfo.collider.CompareTag("LaserReceiver"))
                 {
                     OnLaserReceived?.Invoke();
+                    l_HitInfo.collider.gameObject.SetActive(false);
                 }
 
                 if (l_HitInfo.collider.CompareTag("Player") && l_HitInfo.collider.TryGetComponent(out PlayerLifeController l_PlayerLifeController))
@@ -85,9 +91,24 @@ public class Turret : TeleportableObjects, IRestartGame
         return Vector3.Dot(transform.up, Vector3.up) > Mathf.Cos(m_MaxAngleLaserAlive * Mathf.Deg2Rad);
     }
 
+    public IEnumerator TurretDeathCoroutine(Turret l_Turret, GameObject l_TurretObject)
+    {
+        if (m_IsDying) yield break;
+        m_IsDying = true;
+
+        l_Turret.m_TurretExplosionParticles.Play();
+        SoundsManager.instance.PlaySoundClip(m_TurretDeathSound, transform, 0.2f);
+        SoundsManager.instance.PlaySoundClip(m_ExplosionSound, transform, 0.2f);
+        yield return new WaitForSeconds(0.2f);
+
+        l_TurretObject.SetActive(false);
+        m_IsDying = false;
+    }
+
     public void RestartGame()
     {
         transform.position = m_StartPosition;
         transform.rotation = m_StartRotation;
+        gameObject.SetActive(true);
     }
 }

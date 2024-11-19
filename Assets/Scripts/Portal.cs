@@ -102,9 +102,12 @@ public class Portal : MonoBehaviour
                 //Animacion
                 Destroy(l_HitInfo.collider.gameObject);
             }
-            else if (l_HitInfo.collider.TryGetComponent(out PlayerLifeController l_PlayerLifeController))
+            else if (l_HitInfo.collider.CompareTag("Turret") && l_HitInfo.collider.TryGetComponent(out PlayerLifeController l_PlayerLifeController))
             {
-                l_PlayerLifeController.Death();
+                float l_LaserDuration = l_PlayerLifeController.m_TimeToKillPlayer;
+                float l_PlayerHealth = l_PlayerLifeController.m_MaxPlayerHealth;
+                float l_DamagePerSecond = l_PlayerHealth / l_LaserDuration;
+                GameManager.instance.ReportPlayerDamaged(l_DamagePerSecond);
             }
         }
         else

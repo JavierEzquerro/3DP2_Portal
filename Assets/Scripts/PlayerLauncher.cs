@@ -9,6 +9,9 @@ public class PlayerLauncher : MonoBehaviour
     private float m_VerticalSpeed;
     private bool m_IsLaunching = false;
 
+    [Header("Sounds")]
+    [SerializeField] private AudioClip m_LaunchSound;
+
     private void OnEnable()
     {
         Player_Controller.OnPlayerLaunched += LaunchToTarget;
@@ -44,6 +47,8 @@ public class PlayerLauncher : MonoBehaviour
         m_CharacterController.GetComponent<Player_Controller>().m_CanMove = false;                                                     
         m_IsLaunching = true;
 
+        SoundsManager.instance.PlaySoundClip(m_LaunchSound, transform, 0.2f);
+
         Vector3 l_StartPosition = transform.position;
         Vector3 l_TargetPosition = m_TargetLandingPosition.position;
 
@@ -61,7 +66,5 @@ public class PlayerLauncher : MonoBehaviour
 
         Vector3 horizontalDirection = l_HorizontalDisplacement.normalized;
         m_HorizontalVelocity = horizontalDirection * (l_HorizontalDistance / l_TotalFlightTime);
-
-        m_IsLaunching = true;
     }
 }

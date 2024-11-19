@@ -8,6 +8,7 @@ public class PlayerLifeController : MonoBehaviour, IRestartGame
     [Header("Sounds")]
     [SerializeField] private AudioClip m_DeathSound;
     [SerializeField] private AudioClip m_DeadZoneSound;
+    [SerializeField] private AudioClip m_PlayerHitSound;
 
     [SerializeField] private CanvasGroup m_BloodImage;
     private Player_Controller m_PlayerController;
@@ -22,6 +23,8 @@ public class PlayerLifeController : MonoBehaviour, IRestartGame
     private float m_HealTimer = 0f;
 
     private bool m_Death = false;
+
+    public bool m_HitSoundPlayed = false;
 
     private void OnEnable()
     {
@@ -43,14 +46,15 @@ public class PlayerLifeController : MonoBehaviour, IRestartGame
         m_PlayerAnimator = GetComponent<Animator>();
     }
 
-    private void Update()
-    {
-
-    }
-
     private void ApplyLaserDamage(float l_Damage)
     {
         if (m_Death) return;
+
+        if (m_HitSoundPlayed == false)
+        {
+            SoundsManager.instance.PlaySoundClip(m_PlayerHitSound, transform, 0.2f);
+            m_HitSoundPlayed = true;
+        }
 
         m_DamageTimer += Time.deltaTime;
 
@@ -98,7 +102,7 @@ public class PlayerLifeController : MonoBehaviour, IRestartGame
 
     public void Death()
     {
-        SoundsManager.instance.PlaySoundClip(m_DeadZoneSound, transform, 0.2f);
+        SoundsManager.instance.PlaySoundClip(m_DeathSound, transform, 0.2f);
         m_BloodImage.alpha = 0.0f;
         GameManager.instance.ReStartGame(false);
     }

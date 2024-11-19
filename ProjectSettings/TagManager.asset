@@ -18,6 +18,7 @@ TagManager:
   - Camera
   - DeadZone
   - Checkpoint
+  - SoundsFX
   layers:
   - Default
   - TransparentFX

@@ -69,7 +69,6 @@ public class CompanionSpawner : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             m_PlayerInTrigger = true;
-
             StartCoroutine(ShowTextCoroutine());
         }
     }
