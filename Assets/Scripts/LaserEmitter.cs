@@ -2,14 +2,12 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class LaserEmitter : MonoBehaviour
+public class LaserEmitter : TeleportableObjects
 {
     [SerializeField] private LineRenderer m_LaserRenderer;
     [SerializeField] private AudioClip m_LaserSound;
     [SerializeField] private float m_LaserDistance = 8f;
     [SerializeField] private LayerMask m_LayerMask;
-    //[SerializeField] private float m_LaserOnTime = 2f;
-    //[SerializeField] private float m_LaserOffTime = 1f;
 
     private bool m_LaserActive = true;
     private bool m_SoundPlayed = false;
@@ -17,11 +15,12 @@ public class LaserEmitter : MonoBehaviour
     private void Awake()
     {
         m_LaserRenderer.positionCount = 2;
-        //StartCoroutine(ToggleLaser());
     }
 
-    private void Update()
+    public override void Update()
     {
+        base.Update();
+        
         if (!m_LaserActive)
         {
             m_LaserRenderer.enabled = false;
@@ -57,6 +56,11 @@ public class LaserEmitter : MonoBehaviour
             {
                 l_RayHit.collider.GetComponent<RefractionCube>().CreateRefraction();
             }
+            else if (l_RayHit.collider.CompareTag("Portal"))
+            {
+                m_Portal = l_RayHit.collider.GetComponent<Portal>();
+                m_Portal.RayReflection(l_Ray, l_RayHit);
+            }
         }
         else
         {
@@ -64,16 +68,4 @@ public class LaserEmitter : MonoBehaviour
             m_LaserRenderer.SetPosition(1, transform.position + transform.forward * m_LaserDistance);
         }
     }
-
-    /*private IEnumerator ToggleLaser()
-    {
-        while (true)
-        {
-            m_LaserActive = true;
-            m_SoundPlayed = false;
-            yield return new WaitForSeconds(m_LaserOnTime);
-            m_LaserActive = false;
-            yield return new WaitForSeconds(m_LaserOffTime);
-        }
-    }*/
 }

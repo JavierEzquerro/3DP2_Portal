@@ -32,6 +32,8 @@ public class Portal : MonoBehaviour
     public GameObject m_Turret; 
     private WindowPortalController m_WindowPortalController;
 
+    public static Action OnLaserReceived;
+
     private void Start()
     {
         m_StartSizePortal = transform.localScale; 
@@ -102,12 +104,16 @@ public class Portal : MonoBehaviour
                 //Animacion
                 Destroy(l_HitInfo.collider.gameObject);
             }
-            else if (l_HitInfo.collider.CompareTag("Turret") && l_HitInfo.collider.TryGetComponent(out PlayerLifeController l_PlayerLifeController))
+            else if (l_HitInfo.collider.CompareTag("Player") && l_HitInfo.collider.TryGetComponent(out PlayerLifeController l_PlayerLifeController))
             {
                 float l_LaserDuration = l_PlayerLifeController.m_TimeToKillPlayer;
                 float l_PlayerHealth = l_PlayerLifeController.m_MaxPlayerHealth;
                 float l_DamagePerSecond = l_PlayerHealth / l_LaserDuration;
                 GameManager.instance.ReportPlayerDamaged(l_DamagePerSecond);
+            }
+            else if (l_HitInfo.collider.CompareTag("LaserReceiver"))
+            {
+                OnLaserReceived?.Invoke();
             }
         }
         else

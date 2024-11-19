@@ -47,7 +47,6 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
     [Header("Sounds")]
     [SerializeField] private AudioClip m_EnterPortalSound;
     [SerializeField] private AudioClip m_ExitPortalSound;
-    [SerializeField] private AudioClip m_LandSound;
     private string m_CurrentSurfaceTag;
 
     [Header("Surfaces")]
@@ -67,6 +66,9 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
     private bool m_GravityZone;
     private float m_StartSpeed;
     private Vector3 m_PreviousOffsetFromPortal;
+
+    [Header("Sounds")]
+    [SerializeField] private ParticleSystem m_CheckpointParticles;
 
     public static Action<bool> OnCheckpointEntered;
     private bool m_AddPortalPhysics;
@@ -307,6 +309,7 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
                 OnCheckpointEntered?.Invoke(true);
                 SetStartPosition(l_CheckpointController.CheckPointPosition());
                 l_CheckpointController.SetChecked(true);
+                m_CheckpointParticles.Play();
             }
         }
     }
