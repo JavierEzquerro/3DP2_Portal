@@ -14920,7 +14920,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startSizeY:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -14973,7 +14973,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startSizeZ:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -19602,7 +19602,7 @@ ParticleSystem:
   emitterVelocityMode: 0
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -24535,7 +24535,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startSizeY:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -24588,7 +24588,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startSizeZ:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -29193,7 +29193,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e80bf5945c9e01b4a8180c7fa7860a0f, type: 2}
+  - {fileID: 2100000, guid: 797bf488c630d4c4da4076a24ec6a432, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -29298,31 +29298,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1a626df4558f9e449823a84ba22b7c6a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 17.05
+      value: -46.85
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1a626df4558f9e449823a84ba22b7c6a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.2
+      value: 10.95
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1a626df4558f9e449823a84ba22b7c6a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 10.16
+      value: 149.96
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1a626df4558f9e449823a84ba22b7c6a, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9122352
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1a626df4558f9e449823a84ba22b7c6a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1a626df4558f9e449823a84ba22b7c6a, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.4096668
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1a626df4558f9e449823a84ba22b7c6a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1a626df4558f9e449823a84ba22b7c6a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -29330,7 +29330,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1a626df4558f9e449823a84ba22b7c6a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 48.368
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1a626df4558f9e449823a84ba22b7c6a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -29407,6 +29407,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 085efb987c8e78d429e1ad79362e8007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 121
   m_BoxCollider: {fileID: 0}
   m_Rigidbody: {fileID: 0}
   m_Portal: {fileID: 0}
@@ -29416,9 +29419,6 @@ MonoBehaviour:
   m_Catched: 0
   m_MaxAngleLaserAlive: 10
   m_LaserRenderer: {fileID: 6055624174603138195}
-  m_LayerMask:
-    serializedVersion: 2
-    m_Bits: 121
   m_MaxDistance: 50
   m_TurretDeathSound: {fileID: 8300000, guid: 7c8e8a0cd613f2c4b85a7b076032ab26, type: 3}
   m_ExplosionSound: {fileID: 8300000, guid: 44ecfe0f738ceeb4e8ff5c942cd14f46, type: 3}

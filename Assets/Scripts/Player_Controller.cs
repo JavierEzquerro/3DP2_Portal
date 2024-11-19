@@ -355,6 +355,7 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
             //Entro y salgo por portales en el suelo
             if (l_DotMirrorPortalToVectorUp >= 0.9f)
             {
+                Debug.Log(l_Velocity);  
                 if (m_CharacterController.velocity.magnitude <= 2.0f)
                 {
                     l_Velocity = 8.0f;
