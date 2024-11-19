@@ -234,12 +234,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_DeathSound: {fileID: 8300000, guid: 9bdd57e272b4e7c48aff0118a32d382d, type: 3}
   m_DeadZoneSound: {fileID: 8300000, guid: d22c202a3c29c2e40b860f13a4cf4f40, type: 3}
-  m_PlayerHitSound: {fileID: 8300000, guid: 0640e51a4a31b964d86863d962d8a122, type: 3}
+  m_PlayerHitSound: {fileID: 8300000, guid: 29337c54581d6a44d9d8f6074775a672, type: 3}
   m_BloodImage: {fileID: 0}
   m_TimeToHealPlayer: 2
   m_TimeToKillPlayer: 1
   m_MaxPlayerHealth: 100
   m_Health: 0
+  m_HitSoundPlayed: 0
 --- !u!1 &2792712934715810580
 GameObject:
   m_ObjectHideFlags: 0

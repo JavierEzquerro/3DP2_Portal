@@ -1,16 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RefractionCube : MonoBehaviour
+public class RefractionCube : TeleportableObjects
 {
     public LineRenderer m_LaserRenderer;
     public LayerMask m_LayerMask;
     public float m_MaxDistance = 50.0f;
     private bool m_CreateRefraction = false;
 
-    void Update()
+    public static Action OnLaserReceived;
+
+    public override void Update()
     {
+        base.Update();
+
         m_LaserRenderer.gameObject.SetActive(m_CreateRefraction);
         m_CreateRefraction = false;
     }
@@ -18,16 +23,16 @@ public class RefractionCube : MonoBehaviour
     public void CreateRefraction()
     {
         if (m_CreateRefraction)
-            return; 
+            return;
 
         m_CreateRefraction = true;
 
         Ray l_Ray = new Ray(m_LaserRenderer.transform.position, m_LaserRenderer.transform.forward);
 
-        if(Physics.Raycast(l_Ray, out RaycastHit l_HitInfo, m_MaxDistance, m_LayerMask.value))
+        if (Physics.Raycast(l_Ray, out RaycastHit l_HitInfo, m_MaxDistance, m_LayerMask.value))
         {
-            float l_Distance = l_HitInfo.distance;  
-            m_LaserRenderer.SetPosition(1, new Vector3(0,0, l_HitInfo.distance));  
+            float l_Distance = l_HitInfo.distance;
+            m_LaserRenderer.SetPosition(1, new Vector3(0, 0, l_Distance));
             m_LaserRenderer.gameObject.SetActive(true);
 
             if (l_HitInfo.collider.CompareTag("RefractionCube"))
@@ -35,6 +40,19 @@ public class RefractionCube : MonoBehaviour
                 //Reflect ray
                 l_HitInfo.collider.GetComponent<RefractionCube>().CreateRefraction();
             }
+            else if (l_HitInfo.collider.CompareTag("Player") && l_HitInfo.collider.TryGetComponent(out PlayerLifeController l_PlayerLifeController))
+            {
+                float l_LaserDuration = l_PlayerLifeController.m_TimeToKillPlayer;
+                float l_PlayerHealth = l_PlayerLifeController.m_MaxPlayerHealth;
+                float l_DamagePerSecond = l_PlayerHealth / l_LaserDuration;
+                GameManager.instance.ReportPlayerDamaged(l_DamagePerSecond);
+            }
+            else if (l_HitInfo.collider.CompareTag("LaserReceiver"))
+            {
+                OnLaserReceived?.Invoke();
+                l_HitInfo.collider.gameObject.SetActive(false);
+            }
+
         }
         else
             m_LaserRenderer.gameObject.SetActive(false);

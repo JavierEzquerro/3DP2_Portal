@@ -48,8 +48,7 @@ public class Turret : TeleportableObjects, IRestartGame
 
                 if (l_HitInfo.collider.CompareTag("RefractionCube"))
                 {
-                    m_LaserRenderer.SetPosition(1, new Vector3(0, 0, l_HitInfo.distance));
-                    m_LaserRenderer.gameObject.SetActive(true);
+                    l_HitInfo.collider.GetComponent<RefractionCube>().CreateRefraction();
                 }
                 else if (l_HitInfo.collider.CompareTag("Turret"))
                 {
@@ -62,7 +61,6 @@ public class Turret : TeleportableObjects, IRestartGame
 
                     Turret l_Turret = l_HitInfo.collider.GetComponent<Turret>();
                     StartCoroutine(TurretDeathCoroutine(l_Turret, l_HitInfo.collider.gameObject));
-
                 }
                 else if (l_HitInfo.collider.CompareTag("Portal"))
                 {
