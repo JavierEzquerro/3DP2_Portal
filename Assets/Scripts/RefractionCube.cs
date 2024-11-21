@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RefractionCube : TeleportableObjects 
+public class RefractionCube : TeleportableObjects  
 {
     public LineRenderer m_LaserRenderer;
     public float m_MaxDistance = 50.0f;

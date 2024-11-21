@@ -177,7 +177,8 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
         else if (m_AddPortalPhysics)
         {
             m_CurrentVelocity.y += Physics.gravity.y * Time.deltaTime * m_GravityForce;
-            m_CharacterController.Move(m_CurrentVelocity * Time.deltaTime); 
+            m_CharacterController.Move(m_CurrentVelocity * Time.deltaTime);
+            m_verticalSpeed = 0.0f; 
         }
         else
         {
@@ -185,6 +186,8 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
             m_verticalSpeed += Physics.gravity.y * Time.deltaTime * m_GravityForce;
             l_MovementDirection.y = m_verticalSpeed * Time.deltaTime;
         }
+
+        Debug.Log(m_CharacterController.velocity.magnitude);
 
         CollisionFlags l_CollisionFlags = m_CharacterController.Move(l_MovementDirection);  
 
@@ -213,6 +216,11 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
                 m_EnterPortal = false;
             }
         }
+
+        if (Input.GetKey(KeyCode.T))
+            Time.timeScale = 0.2f;
+        else
+            Time.timeScale = 1.0f; 
     }
 
     private void DetectSurface()
@@ -323,6 +331,7 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
     public void Teleport(Portal l_portal)
     {
         float l_Velocity = m_CharacterController.velocity.magnitude;
+
         float l_DotPortalToVectorUp = Mathf.Abs(Vector3.Dot(Vector3.up, l_portal.transform.forward));
         float l_DotMirrorPortalToVectorUp = Mathf.Abs(Vector3.Dot(Vector3.up, l_portal.m_MirrorPortal.transform.forward));
         float l_DotPortals = Vector3.Dot(l_portal.transform.forward, l_portal.m_MirrorPortal.m_MirrorPortal.transform.forward);
@@ -337,7 +346,7 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
             //Entro por portal en pared y salgo por el suelo
             if (l_DotMirrorPortalToVectorUp >= 0.9)
             {
-                if (m_CharacterController.velocity.y <= 5.0f)
+                if (l_Velocity <= 5.0f)
                 {
                     l_Velocity = 8.0f;
                 }
@@ -349,8 +358,7 @@ public class Player_Controller : MonoBehaviour, ITeleport, IRestartGame
             //Entro y salgo por portales en el suelo
             if (l_DotMirrorPortalToVectorUp >= 0.9f)
             {
-                Debug.Log(l_Velocity);  
-                if (m_CharacterController.velocity.magnitude <= 2.0f)
+                if (l_Velocity <= 2.0f)
                 {
                     l_Velocity = 8.0f;
                 }
